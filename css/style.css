@@ -3,6 +3,10 @@
   --accent-2:#1e40af; --danger:#ef4444; --paid:#16a34a; --upcoming:#b38f00;
   --glass: rgba(255,255,255,0.6);
   --shadow: 0 8px 24px rgba(6,11,21,0.06);
+  --stat-stock-bg: #ecfdf5;
+  --stat-stock-color: #166534;
+  --stat-sold-bg:  #fff1f2;
+  --stat-sold-color:#991b1b;
 }
 *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
 html,body{height:100%}
@@ -34,11 +38,17 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .chip{padding:8px 12px;border-radius:999px;border:1px solid #edf2ff;background:transparent;cursor:pointer;font-weight:600}
 .chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none}
 
-/* summary */
+/* summary (default desktop) */
 .summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
 .stat{padding:16px;text-align:center;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(2,6,23,0.04)}
 .stat-label{color:var(--muted);font-size:13px;margin-bottom:6px}
 .stat-value{font-weight:800;font-size:20px}
+
+/* color the Instock and Sold cards for clarity using nth-child */
+.summary-row .stat:nth-child(2) { background: var(--stat-stock-bg); color: var(--stat-stock-color); }
+.summary-row .stat:nth-child(2) .stat-label { color: var(--stat-stock-color); }
+.summary-row .stat:nth-child(3) { background: var(--stat-sold-bg); color: var(--stat-sold-color); }
+.summary-row .stat:nth-child(3) .stat-label { color: var(--stat-sold-color); }
 
 /* list */
 .table{width:100%;border-collapse:collapse}
@@ -65,27 +75,39 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .detail-card h2{margin:0 0 6px 0}
 small.muted{color:var(--muted);font-size:13px}
 
-/* small screens (MOBILE) improvements */
+/* responsive mobile improvements */
 @media(max-width:720px){
-  /* topbar: compact and 1-row */
+  /* topbar: compact */
   .topbar{padding:8px 0}
   .logo-sm{width:40px;height:40px}
   .title{font-size:15px}
   .top-actions{gap:6px}
   .top-actions .btn{padding:8px 10px;font-size:13px;border-radius:10px}
 
-  /* controls: full width search, chips wrap well */
+  /* controls: full width search, chips wrap neatly */
   .controls{padding:8px 6px}
   .controls .search-row input{padding:12px;border-radius:12px}
   .filters-row{gap:8px}
   .btn-group{flex-wrap:wrap}
   .chip{padding:8px 10px;font-size:14px}
 
-  /* summary: stack vertically, smaller cards */
-  .summary-row{grid-template-columns:1fr;gap:10px;margin:10px 0}
-  .stat{padding:12px}
+  /* summary: make horizontal scrollable row (compact) so it stays on one line */
+  .summary-row{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .summary-row .stat{
+    min-width:140px;
+    flex:0 0 auto;
+    padding:10px;
+    margin-bottom:0;
+  }
+  .stat-value{font-size:18px}
 
-  /* list/card: compact rows, tighter spacing */
+  /* list/card: compact rows, reduced spacing */
   .list-card .item{
     padding:10px;
     border-radius:12px;
@@ -105,15 +127,14 @@ small.muted{color:var(--muted);font-size:13px}
   /* reduce card shadow on mobile for flatter look */
   .card { box-shadow: 0 6px 16px rgba(6,11,21,0.05); padding:10px; }
 
-  /* EMI table: convert to stacked list on very small screens */
-  .table, .table thead, .table tbody, .table tr, .table td, .table th { display:block; width:100%; }
-  .table thead { display:none; }
-  .table tr { margin-bottom:10px; border-radius:10px; background:var(--card); padding:10px; box-shadow:0 4px 12px rgba(2,6,23,0.04); }
-  .table td { padding:6px 0; border-bottom:none; }
-  .table td:nth-child(1)::before { content:"#:"; font-weight:700; margin-right:6px; color:var(--muted); }
-  .table td:nth-child(2)::before { content:"Due:"; font-weight:700; margin-right:6px; color:var(--muted); }
-  .table td:nth-child(3)::before { content:"Amt:"; font-weight:700; margin-right:6px; color:var(--muted); }
-  .table td:nth-child(4)::before { content:"Status:"; font-weight:700; margin-right:6px; color:var(--muted); }
+  /* EMI table: keep table layout on mobile but make it horizontally scrollable and compact */
+  .card > .table { width:100%; border-collapse:collapse; }
+  .table { display:table; }
+  .table thead { display:table-header-group; }
+  .table tbody { display:table-row-group; }
+  .table tr { display:table-row; }
+  .table th, .table td { display:table-cell; padding:8px 8px; border-bottom:1px solid #f1f5f9; font-size:13px; }
+  .table { overflow-x:auto; -webkit-overflow-scrolling:touch; }
 
   /* reduce margins for better fit */
   .container{padding:12px}
