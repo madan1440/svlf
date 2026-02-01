@@ -9,10 +9,15 @@
 <body onload="requireLogin(); loadView();">
 <header class="topbar">
   <div class="container topbar-inner">
-    <div class="brand-left">
-      <div class="logo-sm">V</div>
-      <div class="title-small">Vehicle Details</div>
+    <!-- big back arrow button -->
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="btn back-big" onclick="location.href='index.html'">←</button>
+      <div class="brand-left">
+        <div class="logo-sm">V</div>
+        <div class="title-small">Vehicle Details</div>
+      </div>
     </div>
+
     <div class="top-actions">
       <button class="btn outline" onclick="logout()">Logout</button>
     </div>
@@ -20,7 +25,6 @@
 </header>
 
 <main class="container">
-  <button class="btn ghost" onclick="history.back()">← Back</button>
   <div id="vehicleCard" class="card detail-card"></div>
   <div id="sellerCard" class="card"></div>
   <div id="buyerCard" class="card"></div>
@@ -28,7 +32,7 @@
     <div class="filters" style="display:flex;gap:8px;margin-bottom:8px">
       <button class="btn small" onclick="renderEmis(false)">All EMIs</button>
       <button class="btn small" onclick="renderEmis(true)">Pending Only</button>
-      <button class="btn small" onclick="history.back()">Back</button>
+      <!-- small back inside EMI card removed on purpose as requested -->
     </div>
     <h3>EMI Schedule</h3>
     <table class="table" id="emiTable"><thead><tr><th>#</th><th>Due</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table>
