@@ -23,6 +23,7 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .btn.small{padding:6px 8px;font-size:13px;border-radius:8px}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white}
 .btn.outline{background:transparent;border:1px solid #e6eefc;color:#0f172a}
+.btn.back-big{ background:var(--accent-2); color:white; padding:10px 14px; font-size:15px; border-radius:10px; font-weight:700; border:none; }
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .card-sm{padding:14px}
 .center-card{max-width:420px;margin:40px auto;padding:18px;text-align:center}
@@ -30,6 +31,11 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .brand .logo{width:56px;height:56px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
 .muted{color:var(--muted);font-size:13px}
 .error{color:var(--danger);margin-top:8px}
+
+/* TYPE CARDS */
+.type-row{display:flex;gap:10px}
+.type-card{background:linear-gradient(180deg,#fff,#fbfdff);padding:10px 12px;border-radius:10px;border:1px solid #edf2ff;font-weight:700;cursor:pointer;color:#0f172a}
+.type-card.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
 
 /* controls */
 .controls .search-row input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6eefc;background:linear-gradient(180deg,#fff,#fbfdff)}
@@ -39,12 +45,17 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none}
 
 /* summary (default desktop) */
-.summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
 .stat{padding:16px;text-align:center;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(2,6,23,0.04)}
 .stat-label{color:var(--muted);font-size:13px;margin-bottom:6px}
 .stat-value{font-weight:800;font-size:20px}
 
-/* color the Instock and Sold cards for clarity using nth-child */
+/* clickable stat */
+.stat.clickable{cursor:pointer;transition:transform .12s, box-shadow .12s}
+.stat.clickable:hover{transform:translateY(-4px)}
+.stat.active{box-shadow:0 10px 30px rgba(2,6,23,0.08);border:none}
+
+/* color the Instock and Sold cards */
 .summary-row .stat:nth-child(2) { background: var(--stat-stock-bg); color: var(--stat-stock-color); }
 .summary-row .stat:nth-child(2) .stat-label { color: var(--stat-stock-color); }
 .summary-row .stat:nth-child(3) { background: var(--stat-sold-bg); color: var(--stat-sold-color); }
@@ -77,21 +88,15 @@ small.muted{color:var(--muted);font-size:13px}
 
 /* responsive mobile improvements */
 @media(max-width:720px){
-  /* topbar: compact */
   .topbar{padding:8px 0}
   .logo-sm{width:40px;height:40px}
   .title{font-size:15px}
   .top-actions{gap:6px}
   .top-actions .btn{padding:8px 10px;font-size:13px;border-radius:10px}
-
-  /* controls: full width search, chips wrap neatly */
   .controls{padding:8px 6px}
   .controls .search-row input{padding:12px;border-radius:12px}
-  .filters-row{gap:8px}
-  .btn-group{flex-wrap:wrap}
-  .chip{padding:8px 10px;font-size:14px}
-
-  /* summary: make horizontal scrollable row (compact) so it stays on one line */
+  .type-row{gap:8px; margin-top:10px}
+  .type-card{padding:10px;font-size:14px}
   .summary-row{
     display:flex;
     gap:10px;
@@ -99,46 +104,18 @@ small.muted{color:var(--muted);font-size:13px}
     padding-bottom:6px;
     -webkit-overflow-scrolling:touch;
   }
-  .summary-row .stat{
-    min-width:140px;
-    flex:0 0 auto;
-    padding:10px;
-    margin-bottom:0;
-  }
+  .summary-row .stat{min-width:120px; flex:0 0 auto; padding:10px; margin-bottom:0}
   .stat-value{font-size:18px}
-
-  /* list/card: compact rows, reduced spacing */
-  .list-card .item{
-    padding:10px;
-    border-radius:12px;
-    margin-bottom:8px;
-    gap:8px;
-  }
+  .list-card .item{padding:10px; border-radius:12px; margin-bottom:8px; gap:8px;}
   .item .meta { flex-direction: column; align-items: flex-start; gap:4px; }
   .item .meta .title { font-size:15px; }
   .item .meta .sub { font-size:12px; color:var(--muted) }
-
-  /* vehicle number clickable more prominent */
   .linknum { font-size:14px; color: #1e40af; padding:6px 0; display:inline-block; text-decoration:underline; }
-
-  /* make badges smaller and pill-like */
   .badge { min-width:64px; padding:6px 10px; font-size:13px; border-radius:999px; }
-
-  /* reduce card shadow on mobile for flatter look */
   .card { box-shadow: 0 6px 16px rgba(6,11,21,0.05); padding:10px; }
-
-  /* EMI table: keep table layout on mobile but make it horizontally scrollable and compact */
-  .card > .table { width:100%; border-collapse:collapse; }
-  .table { display:table; }
-  .table thead { display:table-header-group; }
-  .table tbody { display:table-row-group; }
-  .table tr { display:table-row; }
-  .table th, .table td { display:table-cell; padding:8px 8px; border-bottom:1px solid #f1f5f9; font-size:13px; }
-  .table { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-
-  /* reduce margins for better fit */
   .container{padding:12px}
   .card { margin-bottom:10px; }
+  .table th, .table td { padding:8px 8px; font-size:13px; }
 }
 
 /* desktop tweaks remain unchanged; large screens keep original look */
