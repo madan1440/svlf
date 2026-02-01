@@ -23,7 +23,29 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .btn.small{padding:6px 8px;font-size:13px;border-radius:8px}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white}
 .btn.outline{background:transparent;border:1px solid #e6eefc;color:#0f172a}
-.btn.back-big{ background:var(--accent-2); color:white; padding:10px 14px; font-size:15px; border-radius:10px; font-weight:700; border:none; }
+/* Large back arrow button used on the details page */
+.btn.back-big{
+  background:var(--accent-2);
+  color:white;
+  padding:10px 14px;
+  font-size:17px;
+  border-radius:10px;
+  font-weight:800;
+  border:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:46px;
+  min-height:46px;
+}
+
+/* admin download icon small style */
+.admin-download{
+  font-weight:700;
+  padding:8px 10px;
+  border-radius:10px;
+  display:none; /* shown only by JS if admin */
+}
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .card-sm{padding:14px}
 .center-card{max-width:420px;margin:40px auto;padding:18px;text-align:center}
