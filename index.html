@@ -36,7 +36,7 @@
         <button class="chip active" data-status="ALL" onclick="onStatusFilter(event)">ALL</button>
         <button class="chip" data-status="Stock" onclick="onStatusFilter(event)">In Stock</button>
         <button class="chip" data-status="Sold" onclick="onStatusFilter(event)">Sold</button>
-        <button class="chip" data-status="Pending" onclick="onPendingFilter(event)">EMI Pending</button>
+        <button class="chip" id="pendingChip" onclick="togglePendingFilter()">EMI Pending</button>
       </div>
     </div>
   </section>

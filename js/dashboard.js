@@ -18,6 +18,7 @@ function onTypeFilter(e){
   e.target.classList.add('active');
   CURRENT_TYPE = e.target.dataset.type;
   PENDING_MODE=false;
+  document.getElementById('pendingChip').classList.remove('active');
   applyFilters();
 }
 function onStatusFilter(e){
@@ -25,13 +26,15 @@ function onStatusFilter(e){
   e.target.classList.add('active');
   CURRENT_STATUS = e.target.dataset.status;
   PENDING_MODE=false;
+  document.getElementById('pendingChip').classList.remove('active');
   applyFilters();
 }
-function onPendingFilter(e){
-  const btn = e.target;
+function togglePendingFilter(){
   PENDING_MODE = !PENDING_MODE;
-  btn.classList.toggle('active', PENDING_MODE);
+  const chip = document.getElementById('pendingChip');
+  chip.classList.toggle('active', PENDING_MODE);
   if(PENDING_MODE){
+    // clear other status chips
     document.querySelectorAll('.btn-group')[1].querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
   }
   applyFilters();
@@ -42,10 +45,16 @@ function applyFilters(){
   if(CURRENT_TYPE!=='ALL') list = list.filter(v=> (v.type||'')===CURRENT_TYPE);
   if(CURRENT_STATUS!=='ALL') list = list.filter(v=> (v.status||'')===CURRENT_STATUS);
   if(PENDING_MODE){
+    // show vehicles which have at least one overdue unpaid EMI
     list = list.filter(v=>{
       const buyerId = v.buyer_id || '';
-      if(!buyerId) return false;
-      return EMI.some(e=> (e.buyer_id===buyerId || e.vehicle_id===v.vehicle_id) && (e.status||'').toLowerCase()!=='paid');
+      const related = EMI.filter(e => (e.buyer_id===buyerId) || (e.vehicle_id===v.vehicle_id));
+      const today = new Date(); today.setHours(0,0,0,0);
+      return related.some(r => {
+        const paid = (r.status||'').toLowerCase() === 'paid';
+        const due = new Date(r.due_date); due.setHours(0,0,0,0);
+        return !paid && due < today;
+      });
     });
   }
   if(q){ list = list.filter(v=> (v.name+' '+v.brand+' '+v.model+' '+v.number).toLowerCase().includes(q)); }
@@ -56,8 +65,8 @@ function renderList(list){
   if(!list.length){ wrap.innerHTML='<div class="muted">No records found</div>'; return; }
   if(window.innerWidth < 720){
     wrap.innerHTML = list.map(v=>`
-      <div class="item" onclick="location='view.html?id=${v.vehicle_id}'">
-        <div class="meta">
+      <div class="item">
+        <div class="meta" style="flex:1" onclick="location='view.html?id=${v.vehicle_id}'">
           <div><strong>${v.name||''}</strong><div class="muted">${v.brand||''} • ${v.model||''}</div></div>
         </div>
         <div style="text-align:right">

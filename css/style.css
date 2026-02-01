@@ -1,6 +1,6 @@
 :root{
   --bg:#f7f9fc; --card:#ffffff; --muted:#6b7280; --accent:#2563eb;
-  --accent-2:#1e40af; --danger:#ef4444; --paid:#16a34a;
+  --accent-2:#1e40af; --danger:#ef4444; --paid:#16a34a; --upcoming:#b38f00;
 }
 *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
 body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialiased}
@@ -13,6 +13,7 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .title-small{font-weight:700;font-size:16px}
 .top-actions{display:flex;gap:8px;align-items:center}
 .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:600;background:var(--accent);color:white}
+.btn.small{padding:6px 8px;font-size:13px}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white}
 .btn.outline{background:transparent;border:1px solid #e6eefc;color:#0f172a}
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(6,11,21,0.06);margin-bottom:12px}
@@ -47,7 +48,8 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 
 /* EMI row styles */
 .emi-paid{background:rgba(22,163,74,0.08);color:var(--paid);font-weight:700}
-.emi-unpaid{background:rgba(239,68,68,0.06);color:var(--danger);font-weight:700}
+.emi-pending{background:rgba(239,68,68,0.06);color:var(--danger);font-weight:700}
+.emi-upcoming{background:rgba(255,241,204,0.06);color:var(--upcoming);font-weight:700}
 
 /* link styling */
 .linknum{color:var(--accent);text-decoration:none;font-weight:700}

@@ -25,6 +25,11 @@
   <div id="sellerCard" class="card"></div>
   <div id="buyerCard" class="card"></div>
   <div class="card">
+    <div class="filters" style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn small" onclick="renderEmis(false)">All EMIs</button>
+      <button class="btn small" onclick="renderEmis(true)">Pending Only</button>
+      <button class="btn small" onclick="history.back()">Back</button>
+    </div>
     <h3>EMI Schedule</h3>
     <table class="table" id="emiTable"><thead><tr><th>#</th><th>Due</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table>
   </div>

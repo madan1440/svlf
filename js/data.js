@@ -7,6 +7,7 @@ async function loadCSV(path){
     if(rows.length<=1) return [];
     const keys = rows[0].split(',').map(k=>k.trim());
     return rows.slice(1).map(line=>{
+      // naive CSV parse (no embedded commas)
       const vals = line.split(',').map(v=>v.trim());
       const obj = {}; keys.forEach((k,i)=> obj[k]= (vals[i]===undefined? '': vals[i]) );
       return obj;
