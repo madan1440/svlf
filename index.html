@@ -14,7 +14,6 @@
       <div class="title">Vehicle Finance</div>
     </div>
     <div class="top-actions">
-      <!-- admin-only single download icon -->
       <button id="adminDownloadBtn" class="btn ghost admin-download" style="display:none" title="Download CSVs" onclick="downloadAllCSVs()">⬇</button>
       <button class="btn outline" onclick="logout()">Logout</button>
     </div>
@@ -44,9 +43,17 @@
     <div class="stat clickable" id="pendingCard" onclick="onStatCardClick('PENDING')"><div class="stat-label">EMI Pending</div><div id="pendingCount" class="stat-value">0</div></div>
   </section>
 
-  <!-- List -->
+  <!-- LIST: scroller for mobile, table for desktop -->
   <section id="list" class="card list-card">
-    <div id="tableWrap"></div>
+    <!-- scrollable viewport (mobile) -->
+    <div id="listScroller" class="scroller">
+      <div id="tableWrap"></div>
+    </div>
+
+    <!-- desktop load more fallback -->
+    <div id="desktopLoadMore" style="text-align:center;padding-top:8px;display:none">
+      <button class="btn small" id="btnLoadMore" onclick="loadMore()">Load more</button>
+    </div>
   </section>
 </main>
 
