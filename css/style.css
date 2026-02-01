@@ -1,0 +1,9 @@
+body{font-family:Arial;background:#f1f5f9;margin:0}
+header{background:#2563eb;color:white;padding:12px;display:flex;justify-content:space-between}
+table{width:100%;background:white;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #ddd}
+tr:hover{background:#eef}
+.login-body{display:flex;justify-content:center;align-items:center;height:100vh}
+.login-card{background:white;padding:20px;border-radius:10px;width:280px}
+input,select,button{width:100%;padding:10px;margin:6px 0}
+button{background:#2563eb;color:white;border:none;border-radius:6px}

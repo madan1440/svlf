@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Vehicle Finance</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body onload="requireLogin(); loadDashboard();">
+<header>
+<h2>Vehicle Finance Dashboard</h2>
+<button onclick="logout()">Logout</button>
+</header>
+<div class="controls">
+<input id="search" placeholder="Search" oninput="applyFilters()">
+<select id="type" onchange="applyFilters()">
+<option value="ALL">All</option>
+<option value="Car">Car</option>
+<option value="Bike">Bike</option>
+</select>
+<select id="status" onchange="applyFilters()">
+<option value="ALL">All</option>
+<option value="Stock">Stock</option>
+<option value="Sold">Sold</option>
+</select>
+</div>
+<table id="table">
+<thead><tr><th>Type</th><th>Brand</th><th>Model</th><th>Number</th><th>Status</th></tr></thead>
+<tbody></tbody>
+</table>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
