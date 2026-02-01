@@ -22,31 +22,29 @@
 </header>
 
 <main class="container">
+  <!-- Search -->
   <section class="controls card">
     <div class="search-row">
       <input id="search" placeholder="Search name / brand / model / vehicle number" oninput="applyFilters()" />
     </div>
-    <div class="filters-row">
-      <div class="btn-group" role="group" aria-label="type">
-        <button class="chip active" data-type="ALL" onclick="onTypeFilter(event)">ALL</button>
-        <button class="chip" data-type="Car" onclick="onTypeFilter(event)">Cars</button>
-        <button class="chip" data-type="Bike" onclick="onTypeFilter(event)">Bikes</button>
-      </div>
-      <div class="btn-group" role="group" aria-label="status">
-        <button class="chip active" data-status="ALL" onclick="onStatusFilter(event)">ALL</button>
-        <button class="chip" data-status="Stock" onclick="onStatusFilter(event)">In Stock</button>
-        <button class="chip" data-status="Sold" onclick="onStatusFilter(event)">Sold</button>
-        <button class="chip" id="pendingChip" onclick="togglePendingFilter()">EMI Pending</button>
-      </div>
+
+    <!-- Type cards (Cars / Bikes) -->
+    <div class="type-row" style="margin-top:10px; display:flex; gap:8px;">
+      <div class="type-card active" id="typeAll" data-type="ALL" onclick="onTypeCardClick(event)">All</div>
+      <div class="type-card" id="typeCar" data-type="Car" onclick="onTypeCardClick(event)">Cars</div>
+      <div class="type-card" id="typeBike" data-type="Bike" onclick="onTypeCardClick(event)">Bikes</div>
     </div>
   </section>
 
-  <section class="summary-row">
-    <div class="stat card"><div class="stat-label">Total</div><div id="total" class="stat-value">0</div></div>
-    <div class="stat card"><div class="stat-label">In Stock</div><div id="instock" class="stat-value">0</div></div>
-    <div class="stat card"><div class="stat-label">Sold</div><div id="sold" class="stat-value">0</div></div>
+  <!-- Summary cards (now act as filters) -->
+  <section class="summary-row" id="summaryRow" style="margin-top:10px;">
+    <div class="stat clickable active" id="totalCard" onclick="onStatCardClick('ALL')"><div class="stat-label">Total</div><div id="total" class="stat-value">0</div></div>
+    <div class="stat clickable" id="instockCard" onclick="onStatCardClick('Stock')"><div class="stat-label">In Stock</div><div id="instock" class="stat-value">0</div></div>
+    <div class="stat clickable" id="soldCard" onclick="onStatCardClick('Sold')"><div class="stat-label">Sold</div><div id="sold" class="stat-value">0</div></div>
+    <div class="stat clickable" id="pendingCard" onclick="onStatCardClick('PENDING')"><div class="stat-label">EMI Pending</div><div id="pendingCount" class="stat-value">0</div></div>
   </section>
 
+  <!-- List -->
   <section id="list" class="card list-card">
     <div id="tableWrap"></div>
   </section>
