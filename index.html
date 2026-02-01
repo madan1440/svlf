@@ -1,31 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Vehicle Finance</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dashboard — Vehicle Finance</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body onload="requireLogin(); loadDashboard();">
-<header>
-<h2>Vehicle Finance Dashboard</h2>
-<button onclick="logout()">Logout</button>
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="brand-left">
+      <div class="logo-sm">V</div>
+      <div class="title">Vehicle Finance</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" onclick="downloadCSV('data/full.csv')">Download CSV</button>
+      <button class="btn outline" onclick="logout()">Logout</button>
+    </div>
+  </div>
 </header>
-<div class="controls">
-<input id="search" placeholder="Search" oninput="applyFilters()">
-<select id="type" onchange="applyFilters()">
-<option value="ALL">All</option>
-<option value="Car">Car</option>
-<option value="Bike">Bike</option>
-</select>
-<select id="status" onchange="applyFilters()">
-<option value="ALL">All</option>
-<option value="Stock">Stock</option>
-<option value="Sold">Sold</option>
-</select>
-</div>
-<table id="table">
-<thead><tr><th>Type</th><th>Brand</th><th>Model</th><th>Number</th><th>Status</th></tr></thead>
-<tbody></tbody>
-</table>
+
+<main class="container">
+  <section class="controls card">
+    <div class="search-row">
+      <input id="search" placeholder="Search name / brand / model / vehicle number" oninput="applyFilters()" />
+    </div>
+    <div class="filters-row">
+      <div class="btn-group" role="group" aria-label="type">
+        <button class="chip active" data-type="ALL" onclick="onTypeFilter(event)">ALL</button>
+        <button class="chip" data-type="Car" onclick="onTypeFilter(event)">Cars</button>
+        <button class="chip" data-type="Bike" onclick="onTypeFilter(event)">Bikes</button>
+      </div>
+      <div class="btn-group" role="group" aria-label="status">
+        <button class="chip active" data-status="ALL" onclick="onStatusFilter(event)">ALL</button>
+        <button class="chip" data-status="Stock" onclick="onStatusFilter(event)">In Stock</button>
+        <button class="chip" data-status="Sold" onclick="onStatusFilter(event)">Sold</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary-row">
+    <div class="stat card"><div class="stat-label">Total</div><div id="total" class="stat-value">0</div></div>
+    <div class="stat card"><div class="stat-label">In Stock</div><div id="instock" class="stat-value">0</div></div>
+    <div class="stat card"><div class="stat-label">Sold</div><div id="sold" class="stat-value">0</div></div>
+  </section>
+
+  <section id="list" class="card list-card">
+    <div id="tableWrap"></div>
+  </section>
+</main>
+
 <script src="js/auth.js"></script>
 <script src="js/data.js"></script>
 <script src="js/dashboard.js"></script>
