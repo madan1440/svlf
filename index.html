@@ -14,8 +14,8 @@
       <div class="title">Vehicle Finance</div>
     </div>
     <div class="top-actions">
-      <button class="btn ghost" onclick="downloadCSV('data/full.csv')">Download full.csv</button>
-      <button class="btn ghost" onclick="downloadCSV('data/emi.csv')">Download emi.csv</button>
+      <!-- admin-only single download icon -->
+      <button id="adminDownloadBtn" class="btn ghost admin-download" style="display:none" title="Download CSVs" onclick="downloadAllCSVs()">⬇</button>
       <button class="btn outline" onclick="logout()">Logout</button>
     </div>
   </div>
