@@ -14,7 +14,8 @@
       <div class="title">Vehicle Finance</div>
     </div>
     <div class="top-actions">
-      <button class="btn ghost" onclick="downloadCSV('data/full.csv')">Download CSV</button>
+      <button class="btn ghost" onclick="downloadCSV('data/full.csv')">Download full.csv</button>
+      <button class="btn ghost" onclick="downloadCSV('data/emi.csv')">Download emi.csv</button>
       <button class="btn outline" onclick="logout()">Logout</button>
     </div>
   </div>
@@ -35,6 +36,7 @@
         <button class="chip active" data-status="ALL" onclick="onStatusFilter(event)">ALL</button>
         <button class="chip" data-status="Stock" onclick="onStatusFilter(event)">In Stock</button>
         <button class="chip" data-status="Sold" onclick="onStatusFilter(event)">Sold</button>
+        <button class="chip" data-status="Pending" onclick="onPendingFilter(event)">EMI Pending</button>
       </div>
     </div>
   </section>
