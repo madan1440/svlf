@@ -1,5 +1,5 @@
 // js/view.js
-// Renders vehicle details and EMI table using computed_delay_days.
+// Renders vehicle and EMI table using computed display_status & status_class.
 
 function qs(name) {
   const params = new URLSearchParams(location.search);
@@ -13,7 +13,6 @@ async function loadView() {
     return;
   }
 
-  // load both CSVs in parallel
   const [vehicles, emis] = await Promise.all([
     loadCSV('data/full.csv'),
     loadCSV('data/emi.csv')
@@ -31,7 +30,6 @@ async function loadView() {
     vehicleCard.innerHTML = `<div class="muted">Vehicle not found</div>`;
   }
 
-  // seller
   const sellerCard = document.getElementById('sellerCard');
   if (v && v.seller_name) {
     sellerCard.innerHTML = `
@@ -46,12 +44,11 @@ async function loadView() {
     sellerCard.innerHTML = `<h3>Seller Information</h3><p class="muted">No seller info</p>`;
   }
 
-  // filter EMI rows for this vehicle
+  // filter EMIs for this vehicle
   const emiForVehicle = emis.filter(e => String(e.vehicle_id) === String(vid));
   renderEmiTable(emiForVehicle, vid);
 }
 
-// Render EMI table rows, show computed delay
 function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
   const tbody = document.querySelector('#emiTable tbody');
   if (!tbody) return;
@@ -60,21 +57,26 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
     return;
   }
 
+  const today = new Date(); today.setHours(0,0,0,0);
+
   const html = rows
-    .filter(e => !pendingOnly || (String(e.status || '').toLowerCase() !== 'paid' && isOverdue(e)))
+    .filter(e => !pendingOnly || (e.display_status && e.display_status.toLowerCase() === 'overdue'))
     .map(e => {
-      // Use computed_delay_days (calculated at loadCSV time)
-      const delay = (e.computed_delay_days !== null && e.computed_delay_days !== undefined) ? e.computed_delay_days : "";
-      // For visual clarity: classify status for class names (paid / unpaid / upcoming)
-      const statusLower = (e.status || "").toLowerCase();
-      let statusLabel = e.status || "";
-      // action column: for static site we put '-' (no server actions)
-      const actionHtml = `<span class="muted">-</span>`;
+      // prefer computed_delay_days (paid or overdue), fallback to existing delay_days field
+      const delay = (e.computed_delay_days !== null && e.computed_delay_days !== undefined)
+                    ? e.computed_delay_days
+                    : (e.delay_days !== null ? e.delay_days : "");
+
+      const statusDisplay = e.display_status || (e.status || "");
+      // status class computed in data.js
+      const statusClass = e.status_class || "";
+
+      const actionHtml = `<span class="muted">-</span>`; // static site: no actions
       return `<tr>
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
-        <td>${escapeHtml(statusLabel)}</td>
+        <td class="${statusClass}">${escapeHtml(statusDisplay)}</td>
         <td>${escapeHtml(delay === "" ? "" : String(delay))}</td>
         <td>${actionHtml}</td>
       </tr>`;
@@ -82,20 +84,6 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
   tbody.innerHTML = html;
 }
 
-function isOverdue(e) {
-  // Treat as overdue if due_date exists and due_date < today and status != Paid
-  if (!e.due_date) return false;
-  const due = toDateSafe(e.due_date);
-  if (!due) return false;
-  const today = new Date(); today.setHours(0,0,0,0);
-  if (due < today) {
-    const st = (e.status || "").toLowerCase();
-    return st !== "paid";
-  }
-  return false;
-}
-
-// small HTML escape util
 function escapeHtml(s) {
   if (s === null || s === undefined) return "";
   return String(s)
@@ -106,7 +94,6 @@ function escapeHtml(s) {
     .replace(/'/g, "&#039;");
 }
 
-// expose public API
+// expose
 window.loadView = loadView;
 window.renderEmiTable = renderEmiTable;
-window.isOverdue = isOverdue;

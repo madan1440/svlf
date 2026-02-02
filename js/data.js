@@ -1,5 +1,6 @@
 // js/data.js
-// CSV loader + normalizer for static app. Computes computed_delay_days on the fly.
+// CSV loader + normalizer for the static app.
+// Produces computed_delay_days and stable display_status/status_class for EMIs.
 
 function parseCSV(text, sep = ",") {
   const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
@@ -23,67 +24,78 @@ function toIntSafe(v) {
   return Number.isNaN(n) ? null : n;
 }
 
-// parse ISO date string to Date (local) or null
 function toDateSafe(s) {
   if (!s) return null;
   const d = new Date(s);
-  if (isNaN(d.getTime())) {
-    // try common fallback (yyyy-mm-dd)
-    const parts = s.split("-");
-    if (parts.length >= 3) {
-      const y = parseInt(parts[0], 10);
-      const m = parseInt(parts[1], 10) - 1;
-      const day = parseInt(parts[2].slice(0,2), 10);
-      const dd = new Date(y, m, day);
-      if (!isNaN(dd.getTime())) return dd;
-    }
-    return null;
+  if (!isNaN(d.getTime())) return d;
+  // fallback parse yyyy-mm-dd
+  const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) {
+    const y = parseInt(m[1], 10), mo = parseInt(m[2], 10) - 1, da = parseInt(m[3], 10);
+    const dd = new Date(y, mo, da);
+    if (!isNaN(dd.getTime())) return dd;
   }
-  return d;
+  return null;
 }
 
-// compute days difference (floor)
+// day difference floor
 function daysBetween(aDate, bDate) {
-  const ms = aDate.getTime() - bDate.getTime();
-  return Math.floor(ms / (1000 * 60 * 60 * 24));
+  return Math.floor((aDate.getTime() - bDate.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-// compute computed_delay_days:
-// - if paid_date exists: max(0, paid_date - due_date)
-// - else if due_date < today: today - due_date (overdue days)
-// - else: null (upcoming)
+// compute delay:
+// if paid_date exists -> max(0, paid - due)
+// else if due < today -> today - due (overdue days)
+// else -> null
 function computeDelayDisplay(due_date_str, paid_date_str) {
   const due = toDateSafe(due_date_str);
   const paid = toDateSafe(paid_date_str);
-  const today = new Date();
-  // normalize today's time to midnight for day-based comparisons
-  today.setHours(0,0,0,0);
-
+  const today = new Date(); today.setHours(0,0,0,0);
   if (paid) {
-    // compute paid - due
-    const paidDay = new Date(paid);
-    paidDay.setHours(0,0,0,0);
+    const pd = new Date(paid); pd.setHours(0,0,0,0);
     if (due) {
-      const diff = daysBetween(paidDay, due);
+      const diff = daysBetween(pd, due);
       return diff > 0 ? diff : 0;
-    } else {
-      // no due date, fallback to 0
-      return 0;
     }
+    return 0;
   } else {
     if (due) {
-      const dueDay = new Date(due);
-      dueDay.setHours(0,0,0,0);
-      if (dueDay < today) {
-        // unpaid overdue
-        return daysBetween(today, dueDay);
-      }
+      const dd = new Date(due); dd.setHours(0,0,0,0);
+      if (dd < today) return daysBetween(today, dd);
     }
   }
   return null;
 }
 
-// loadCSV: returns Promise<array of objects> with normalized fields and computed_delay_days
+// determine display status (do not overwrite original CSV status):
+// - If paid_date exists or CSV status === 'Paid' => 'Paid'
+// - Else if due_date < today => 'Overdue'
+// - Else => 'Upcoming'
+function determineDisplayStatus(csvStatus, due_date_str, paid_date_str) {
+  const paid = toDateSafe(paid_date_str);
+  const due = toDateSafe(due_date_str);
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  if (paid || (csvStatus && String(csvStatus).toLowerCase() === "paid")) {
+    return "Paid";
+  }
+  if (due && due < today) {
+    return "Overdue";
+  }
+  return "Upcoming";
+}
+
+// map display_status -> css class (keeps existing classes)
+function statusClassFor(displayStatus) {
+  if (!displayStatus) return "";
+  const s = displayStatus.toLowerCase();
+  if (s === "paid") return "emi-paid";
+  if (s === "overdue") return "emi-pending";
+  // upcoming/default
+  return "emi-upcoming";
+}
+
+// loadCSV: returns Promise<array> normalised
 async function loadCSV(path) {
   const res = await fetch(path, {cache: "no-store"});
   if (!res.ok) throw new Error("Failed to load " + path + " (" + res.status + ")");
@@ -91,26 +103,32 @@ async function loadCSV(path) {
   const raw = parseCSV(txt, ",");
   const normalized = raw.map(r => {
     const obj = Object.assign({}, r);
-    // normalize integer fields if present
     if (obj.vehicle_id !== undefined) obj.vehicle_id = toIntSafe(obj.vehicle_id);
     if (obj.buyer_id !== undefined) obj.buyer_id = toIntSafe(obj.buyer_id);
     if (obj.emi_no !== undefined) obj.emi_no = toIntSafe(obj.emi_no);
     if (obj.amount !== undefined) obj.amount = toIntSafe(obj.amount);
     if (obj.tenure !== undefined) obj.tenure = toIntSafe(obj.tenure);
     if (obj.sale_value !== undefined) obj.sale_value = toIntSafe(obj.sale_value);
-    // keep paid_date and due_date as strings (original), but ensure defined
+
+    // keep original CSV status untouched in obj.status
     obj.paid_date = obj.paid_date ? obj.paid_date : "";
     obj.due_date = obj.due_date ? obj.due_date : "";
-    // attempt to parse delay_days if CSV provided it
-    obj.delay_days = (obj.delay_days !== undefined) ? toIntSafe(obj.delay_days) : null;
-    // compute on-the-fly display delay (does not overwrite delay_days CSV column)
+    obj.delay_days = (obj.delay_days !== undefined && obj.delay_days !== "") ? toIntSafe(obj.delay_days) : null;
+
+    // computed delay based on dates (display only)
     obj.computed_delay_days = computeDelayDisplay(obj.due_date, obj.paid_date);
+
+    // compute a safe display_status and corresponding css class
+    obj.display_status = determineDisplayStatus(obj.status, obj.due_date, obj.paid_date);
+    obj.status_class = statusClassFor(obj.display_status);
+
     return obj;
   });
   return normalized;
 }
 
-// expose helpers globally for other files
+// expose
 window.loadCSV = loadCSV;
 window.computeDelayDisplay = computeDelayDisplay;
-window.toDateSafe = toDateSafe;
+window.determineDisplayStatus = determineDisplayStatus;
+window.statusClassFor = statusClassFor;
