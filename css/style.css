@@ -90,6 +90,18 @@ small.muted{color:var(--muted);font-size:13px}
   .scroller { max-height: calc(4 * 94px + 12px); }
 }
 
+/* EMI delay highlighting */
+.delay-low {
+  color: #d97706; /* amber */
+  font-weight: 600;
+}
+
+.delay-high {
+  color: #dc2626; /* red */
+  font-weight: 700;
+}
+
+
 /* responsive mobile improvements */
 @media(max-width:720px){
   .topbar{padding:8px 0}
@@ -147,5 +159,13 @@ small.muted{color:var(--muted);font-size:13px}
   .card {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width:720px) {
+  .delay-high {
+    background: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 8px;
   }
 }
