@@ -49,7 +49,7 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
   const tbody = document.querySelector('#emiTable tbody');
   if (!tbody) return;
   if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="muted">No EMIs found</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="muted">No EMIs found</td></tr>';
     return;
   }
 
@@ -67,8 +67,7 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
         <td class="${statusClass}">${escapeHtml(statusDisplay)}</td>
-        <td>${escapeHtml(delay === "" ? "" : String(delay))}</td>
-        <td>${actionHtml}</td>
+        <td>${escapeHtml(delay === "" ? "" : String(delay))}</td>        
       </tr>`;
     }).join("");
   tbody.innerHTML = html;
