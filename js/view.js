@@ -91,7 +91,7 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
         <td class="${statusClass}">${escapeHtml(statusDisplay)}</td>
-        <<td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>        
+        <td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>        
       </tr>`;
     }).join("");
   tbody.innerHTML = html;
