@@ -90,7 +90,7 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
       }
 
       /* ✅ NEW: row-level class */
-      const rowClass = `${statusClass} ${delayClass}`.trim();
+      // const rowClass = `${statusClass} ${delayClass}`.trim();
 
       return `<tr class="${rowClass}">
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
