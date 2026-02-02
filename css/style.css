@@ -72,7 +72,7 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .badge.stock{background:#ecfdf5;color:#166534}
 .badge.sold{background:#fff1f2;color:#991b1b;border:1px solid rgba(220,38,38,0.06)}
 
-/* EMI row styles (cell-level fallback styling) */
+/* EMI row styles */
 .emi-paid{background:rgba(22,163,74,0.08);color:var(--paid);font-weight:700}
 .emi-pending{background:rgba(239,68,68,0.06);color:var(--danger);font-weight:700}
 .emi-upcoming{background:rgba(255,241,204,0.06);color:var(--upcoming);font-weight:700}
@@ -90,59 +90,15 @@ small.muted{color:var(--muted);font-size:13px}
   .scroller { max-height: calc(4 * 94px + 12px); }
 }
 
-/* EMI delay highlighting (cell text) */
+/* EMI delay highlighting */
 .delay-low {
   color: #d97706; /* amber */
   font-weight: 600;
 }
+
 .delay-high {
   color: #dc2626; /* red */
   font-weight: 700;
-}
-/* ========== Row-level EMI status & delay backgrounds ========== */
-
-/* Make sure cells are transparent so row backgrounds show through */
-#emiTable td {
-  background: transparent;
-  transition: background-color 0.12s ease;
-}
-
-/* Status-based full-row backgrounds (light, subtle).
-   NOTE: We intentionally do NOT set `color` here so cell text keeps the default color. */
-#emiTable tr.emi-paid td {
-  background: rgba(22,163,74,0.08); /* light green */
-  color: inherit;
-  font-weight: 600; /* optional: remove if you don't want bold text */
-}
-
-#emiTable tr.emi-pending td {
-  background: rgba(239,68,68,0.06); /* light red */
-  color: inherit;
-  font-weight: 600;
-}
-
-#emiTable tr.emi-upcoming td {
-  background: rgba(255,241,204,0.06); /* light amber */
-  color: inherit;
-  font-weight: 600;
-}
-
-/* Delay-based row overrides (stronger emphasis) — these just tint the row background */
-#emiTable tr.delay-low td {
-  background: rgba(255,247,205,0.18); /* light amber tint */
-}
-
-#emiTable tr.delay-high td {
-  background: rgba(254,226,226,0.18); /* light red tint */
-}
-
-/* Keep cell-specific delay text coloring intact (these affect only the delay cell) */
-#emiTable td.delay-low { color: #b45309; font-weight:700; }
-#emiTable td.delay-high { color: #991b1b; font-weight:800; }
-
-/* Make sure hover doesn't hide color (optional) */
-#emiTable tr:hover td {
-  filter: brightness(0.98);
 }
 
 

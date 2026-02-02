@@ -79,18 +79,14 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
                     ? e.computed_delay_days
                     : (e.delay_days !== null ? e.delay_days : "");
       const statusDisplay = e.display_status || (e.status || "");
-      const statusClass = e.status_class || "";    // e.g. "emi-paid", "emi-pending", "emi-upcoming"
+      const statusClass = e.status_class || "";    
       const delayNum = Number(delay);
-      let delayClass = "";
-      if (!isNaN(delayNum)) {
-        if (delayNum > 2) delayClass = "delay-high";
-        else if (delayNum > 0) delayClass = "delay-low";
-      }
-
-      // combine row-level classes: status + delay
-      const rowClass = `${statusClass} ${delayClass}`.trim();
-
-      return `<tr class="${rowClass}">
+                let delayClass = "";
+                if (!isNaN(delayNum)) {
+                  if (delayNum > 2) delayClass = "delay-high";
+                  else if (delayNum > 0) delayClass = "delay-low";
+                }  
+      return `<tr>
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
