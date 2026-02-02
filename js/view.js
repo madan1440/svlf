@@ -79,8 +79,7 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
                     ? e.computed_delay_days
                     : (e.delay_days !== null ? e.delay_days : "");
       const statusDisplay = e.display_status || (e.status || "");
-      const statusClass = e.status_class || "";
-      const actionHtml = `<span class="muted">-</span>`;
+      const statusClass = e.status_class || "";      
       return `<tr>
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
