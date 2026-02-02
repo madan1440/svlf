@@ -99,7 +99,6 @@ small.muted{color:var(--muted);font-size:13px}
   color: #dc2626; /* red */
   font-weight: 700;
 }
-
 /* ========== Row-level EMI status & delay backgrounds ========== */
 
 /* Make sure cells are transparent so row backgrounds show through */
@@ -108,26 +107,27 @@ small.muted{color:var(--muted);font-size:13px}
   transition: background-color 0.12s ease;
 }
 
-/* Status-based full-row backgrounds (light, subtle) */
+/* Status-based full-row backgrounds (light, subtle).
+   NOTE: We intentionally do NOT set `color` here so cell text keeps the default color. */
 #emiTable tr.emi-paid td {
   background: rgba(22,163,74,0.08); /* light green */
-  color: var(--paid);
-  font-weight: 600;
+  color: inherit;
+  font-weight: 600; /* optional: remove if you don't want bold text */
 }
 
 #emiTable tr.emi-pending td {
   background: rgba(239,68,68,0.06); /* light red */
-  color: var(--danger);
+  color: inherit;
   font-weight: 600;
 }
 
 #emiTable tr.emi-upcoming td {
   background: rgba(255,241,204,0.06); /* light amber */
-  color: var(--upcoming);
+  color: inherit;
   font-weight: 600;
 }
 
-/* Delay-based row overrides (stronger emphasis) */
+/* Delay-based row overrides (stronger emphasis) — these just tint the row background */
 #emiTable tr.delay-low td {
   background: rgba(255,247,205,0.18); /* light amber tint */
 }
@@ -136,7 +136,7 @@ small.muted{color:var(--muted);font-size:13px}
   background: rgba(254,226,226,0.18); /* light red tint */
 }
 
-/* Keep cell-specific delay text coloring too */
+/* Keep cell-specific delay text coloring intact (these affect only the delay cell) */
 #emiTable td.delay-low { color: #b45309; font-weight:700; }
 #emiTable td.delay-high { color: #991b1b; font-weight:800; }
 
@@ -144,6 +144,7 @@ small.muted{color:var(--muted);font-size:13px}
 #emiTable tr:hover td {
   filter: brightness(0.98);
 }
+
 
 /* responsive mobile improvements */
 @media(max-width:720px){
