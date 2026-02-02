@@ -86,12 +86,13 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
                   if (delayNum > 2) delayClass = "delay-high";
                   else if (delayNum > 0) delayClass = "delay-low";
                 }  
-      return `<tr>
+      return `<tr class="${statusClass}">
+      
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
         <td class="${statusClass}">${escapeHtml(statusDisplay)}</td>
-        <<td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>        
+        <td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>        
       </tr>`;
     }).join("");
   tbody.innerHTML = html;
