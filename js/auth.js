@@ -1,93 +1,91 @@
 // js/auth.js
-// Static users with roles. First two are admins.
-const USERS=[
-  {username:"9492126272",password:"Madan@1440",name:"Admin One", role:"admin"},
-  {username:"9490479284",password:"Laxmi@6799",name:"Admin Two", role:"admin"},
-  {username:"9492146644",password:"Rupa@0642",name:"User One", role:"user"},
-  {username:"9492948661",password:"Venky@8661",name:"User Two", role:"user"}
+const STATIC_USERS = [
+  { username: "9492126272", password: "Madan@1440", role: "admin", name: "Admin One" },
+  { username: "9490479284", password: "Laxmi@6799", role: "admin", name: "Admin Two" },
+  { username: "9492146644", password: "Rupa@0642", role: "user", name: "User One" },
+  { username: "9492948661", password: "Venky@8661", role: "user", name: "User Two" }
 ];
 
-function login(){
-  const u=document.getElementById('username').value.trim();
-  const p=document.getElementById('password').value;
-  const user = USERS.find(x=>x.username===u && x.password===p);
-  const err = document.getElementById('error');
-  if(!user){ err.innerText='Invalid username or password'; return; }
-  // store role as well
-  localStorage.setItem('vf_user', JSON.stringify({username:user.username,name:user.name, role:user.role}));
-  window.location.href='index.html';
+const STORAGE_KEY = "vf_user";
+function currentUser() {
+  try {
+    const s = sessionStorage.getItem(STORAGE_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch (e) { return null; }
 }
-
-function demo(){ 
-  const user = USERS[0];
-  localStorage.setItem('vf_user', JSON.stringify({username:user.username,name:user.name, role:user.role}));
-  window.location.href='index.html';
+function setCurrentUser(u) { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
+function clearCurrentUser() { sessionStorage.removeItem(STORAGE_KEY); }
+function validateCredentials(username, password) {
+  const found = STATIC_USERS.find(u => u.username === username && u.password === password);
+  if (!found) return null;
+  return { username: found.username, role: found.role, name: found.name || found.username };
 }
-
-function requireLogin(){
-  const raw = localStorage.getItem('vf_user');
-  if(!raw){
-    window.location.href='login.html';
-    return;
+function redirectToLogin(next) {
+  const target = "login.html" + (next ? "?next=" + encodeURIComponent(next) : "");
+  location.href = target;
+}
+function requireAuth(allowedRoles = null) {
+  const u = currentUser();
+  if (!u) {
+    const next = location.pathname + location.search;
+    redirectToLogin(next);
+    return false;
   }
-  // expose current user globally
-  try{
-    window.CURRENT_USER = JSON.parse(raw);
-  }catch(e){
-    window.CURRENT_USER = null;
+  if (allowedRoles && Array.isArray(allowedRoles) && allowedRoles.indexOf(u.role) === -1) {
+    alert("You do not have permission to view this page.");
+    clearCurrentUser();
+    redirectToLogin();
+    return false;
   }
-  // update admin UI (download icon)
-  updateAdminUI();
+  return true;
 }
-
-function logout(){
-  localStorage.removeItem('vf_user');
-  window.location.href='login.html';
-}
-
-function isAdmin(){
-  return window.CURRENT_USER && window.CURRENT_USER.role === 'admin';
-}
-
-function updateAdminUI(){
-  // show/hide element with id 'adminDownloadBtn'
-  const btn = document.getElementById('adminDownloadBtn');
-  if(!btn) return;
-  if(isAdmin()){
-    btn.style.display = 'inline-block';
+function renderTopbarAuth() {
+  const parent = document.querySelector('.topbar .topbar-inner');
+  if (!parent) return;
+  let actions = parent.querySelector('.top-actions');
+  if (!actions) {
+    actions = document.createElement('div');
+    actions.className = 'top-actions';
+    parent.appendChild(actions);
+  }
+  const u = currentUser();
+  actions.innerHTML = '';
+  if (u) {
+    const span = document.createElement('div');
+    span.style.display = 'flex';
+    span.style.alignItems = 'center';
+    span.style.gap = '10px';
+    span.innerHTML = `<div style="font-weight:700;color:rgba(255,255,255,0.95)">${escapeHtml(u.username)} (${escapeHtml(u.role)})</div>
+                      <button class="btn small" id="btnLogout">Logout</button>`;
+    actions.appendChild(span);
+    const btn = document.getElementById('btnLogout');
+    if (btn) btn.addEventListener('click', logout);
   } else {
-    btn.style.display = 'none';
+    const a = document.createElement('a');
+    a.href = 'login.html';
+    a.className = 'btn small';
+    a.innerText = 'Login';
+    actions.appendChild(a);
   }
 }
-
-// Trigger both CSV downloads sequentially (two downloads)
-async function downloadAllCSVs(){
-  // This will try to fetch both CSVs and prompt downloads for each.
-  const files = [
-    {path:'data/full.csv', name:'full.csv'},
-    {path:'data/emi.csv', name:'emi.csv'}
-  ];
-  for(const f of files){
-    try{
-      const res = await fetch(f.path, {cache:"no-store"});
-      if(!res.ok){
-        console.warn('failed to fetch', f.path);
-        continue;
-      }
-      const txt = await res.text();
-      const blob = new Blob([txt], {type:'text/csv;charset=utf-8;'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = f.name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      // small delay to ensure browser registers sequential downloads
-      await new Promise(r => setTimeout(r, 300));
-    }catch(e){
-      console.error('download failed', f, e);
-    }
+function doLogin(username, password, next) {
+  const user = validateCredentials(username, password);
+  if (!user) {
+    return { ok: false, message: "Invalid username or password" };
   }
+  setCurrentUser(user);
+  return { ok: true, user, next };
 }
+function logout() {
+  clearCurrentUser();
+  location.href = 'login.html';
+}
+function escapeHtml(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+window.requireAuth = requireAuth;
+window.renderTopbarAuth = renderTopbarAuth;
+window.doLogin = doLogin;
+window.logout = logout;
+window.currentUser = currentUser;

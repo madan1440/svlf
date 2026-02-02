@@ -1,46 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Vehicle Details — Vehicle Finance</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vehicle Details</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body onload="requireLogin(); loadView();">
+<body>
 <header class="topbar">
   <div class="container topbar-inner">
-    <!-- big back arrow button -->
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="btn back-big" onclick="location.href='index.html'">←</button>
-      <div class="brand-left">
-        <div class="logo-sm">V</div>
-        <div class="title-small">Vehicle Details</div>
-      </div>
+    <div class="brand-left">
+      <a href="index.html" style="color:white;text-decoration:none"><div class="logo-sm">V</div></a>
+      <div class="title">Vehicle Details</div>
     </div>
-
-    <div class="top-actions">
-      <button class="btn outline" onclick="logout()">Logout</button>
-    </div>
+    <div class="top-actions"></div>
   </div>
 </header>
 
 <main class="container">
-  <div id="vehicleCard" class="card detail-card"></div>
-  <div id="sellerCard" class="card"></div>
-  <div id="buyerCard" class="card"></div>
+  <div class="card detail-card" id="vehicleCard">Loading...</div>
+
+  <div class="card" id="sellerCard">Loading seller...</div>
+
   <div class="card">
-    <div class="filters" style="display:flex;gap:8px;margin-bottom:8px">
-      <button class="btn small" onclick="renderEmis(false)">All EMIs</button>
-      <button class="btn small" onclick="renderEmis(true)">Pending Only</button>
-      <!-- small back inside EMI card removed on purpose as requested -->
-    </div>
-    <h3>EMI Schedule</h3>
-    <table class="table" id="emiTable"><thead><tr><th>#</th><th>Due</th><th>Amount</th><th>Status</th><th>Delay (days)</th></tr></thead><tbody></tbody></table>
+    <h3>Buyer & EMI</h3>
+    <table class="table" id="emiTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Due Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Delay (days)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 </main>
 
 <script src="js/auth.js"></script>
+<script>
+  try { requireAuth(); } catch(e){ console.warn("auth check:", e); }
+  try { renderTopbarAuth(); } catch(e){ console.warn("renderTopbarAuth failed:", e); }
+</script>
 <script src="js/data.js"></script>
 <script src="js/view.js"></script>
+<script>document.addEventListener('DOMContentLoaded', ()=>{ loadView().catch(console.error); });</script>
 </body>
 </html>

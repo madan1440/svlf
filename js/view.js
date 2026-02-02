@@ -1,6 +1,4 @@
 // js/view.js
-// Renders vehicle and EMI table using computed display_status & status_class.
-
 function qs(name) {
   const params = new URLSearchParams(location.search);
   return params.get(name);
@@ -12,10 +10,9 @@ async function loadView() {
     document.getElementById('vehicleCard').innerText = "Missing vehicle id";
     return;
   }
-
   const [vehicles, emis] = await Promise.all([
-    loadCSV('data/full.csv'),
-    loadCSV('data/emi.csv')
+    window.loadCSV ? loadCSV('data/full.csv') : fetch('data/full.csv').then(r=>r.text()).then(t=>window.parseCSV ? window.parseCSV(t,',') : []),
+    window.loadCSV ? loadCSV('data/emi.csv') : fetch('data/emi.csv').then(r=>r.text()).then(t=>window.parseCSV ? window.parseCSV(t,',') : [])
   ]);
 
   const v = vehicles.find(x => String(x.vehicle_id) === String(vid));
@@ -44,7 +41,6 @@ async function loadView() {
     sellerCard.innerHTML = `<h3>Seller Information</h3><p class="muted">No seller info</p>`;
   }
 
-  // filter EMIs for this vehicle
   const emiForVehicle = emis.filter(e => String(e.vehicle_id) === String(vid));
   renderEmiTable(emiForVehicle, vid);
 }
@@ -57,21 +53,15 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
     return;
   }
 
-  const today = new Date(); today.setHours(0,0,0,0);
-
   const html = rows
     .filter(e => !pendingOnly || (e.display_status && e.display_status.toLowerCase() === 'overdue'))
     .map(e => {
-      // prefer computed_delay_days (paid or overdue), fallback to existing delay_days field
       const delay = (e.computed_delay_days !== null && e.computed_delay_days !== undefined)
                     ? e.computed_delay_days
                     : (e.delay_days !== null ? e.delay_days : "");
-
       const statusDisplay = e.display_status || (e.status || "");
-      // status class computed in data.js
       const statusClass = e.status_class || "";
-
-      const actionHtml = `<span class="muted">-</span>`; // static site: no actions
+      const actionHtml = `<span class="muted">-</span>`;
       return `<tr>
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
@@ -93,7 +83,3 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
-
-// expose
-window.loadView = loadView;
-window.renderEmiTable = renderEmiTable;

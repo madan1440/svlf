@@ -1,56 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dashboard — Vehicle Finance</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vehicle Finance — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body onload="requireLogin(); loadDashboard();">
+<body>
 <header class="topbar">
   <div class="container topbar-inner">
     <div class="brand-left">
       <div class="logo-sm">V</div>
       <div class="title">Vehicle Finance</div>
     </div>
-    <div class="top-actions">
-      <button id="adminDownloadBtn" class="btn ghost admin-download" style="display:none" title="Download CSVs" onclick="downloadAllCSVs()">⬇</button>
-      <button class="btn outline" onclick="logout()">Logout</button>
-    </div>
+    <div class="top-actions"></div>
   </div>
 </header>
 
 <main class="container">
-  <!-- Search -->
-  <section class="controls card">
-    <div class="search-row">
-      <input id="search" placeholder="Search name / brand / model / vehicle number" oninput="applyFilters()" />
+  <!-- Search + Type -->
+  <section class="card">
+    <div class="controls">
+      <div class="left" style="width:100%;">
+        <input id="search" placeholder="Search name / brand / model / vehicle number" oninput="applyFilters()" />
+      </div>
     </div>
 
-    <!-- Type cards (Cars / Bikes) -->
-    <div class="type-row" style="margin-top:10px; display:flex; gap:8px;">
+    <div style="display:flex;gap:8px;margin-top:10px;">
       <div class="type-card active" id="typeAll" data-type="ALL" onclick="onTypeCardClick(event)">All</div>
       <div class="type-card" id="typeCar" data-type="Car" onclick="onTypeCardClick(event)">Cars</div>
       <div class="type-card" id="typeBike" data-type="Bike" onclick="onTypeCardClick(event)">Bikes</div>
     </div>
   </section>
 
-  <!-- Summary cards (now act as filters) -->
-  <section class="summary-row" id="summaryRow" style="margin-top:10px;">
-    <div class="stat clickable active" id="totalCard" onclick="onStatCardClick('ALL')"><div class="stat-label">Total</div><div id="total" class="stat-value">0</div></div>
-    <div class="stat clickable" id="instockCard" onclick="onStatCardClick('Stock')"><div class="stat-label">In Stock</div><div id="instock" class="stat-value">0</div></div>
-    <div class="stat clickable" id="soldCard" onclick="onStatCardClick('Sold')"><div class="stat-label">Sold</div><div id="sold" class="stat-value">0</div></div>
-    <div class="stat clickable" id="pendingCard" onclick="onStatCardClick('PENDING')"><div class="stat-label">EMI Pending</div><div id="pendingCount" class="stat-value">0</div></div>
+  <!-- summary cards -->
+  <section id="summarySection" class="summary-row card">
+    <div class="stat clickable active" id="totalCard" onclick="onStatCardClick('ALL')">
+      <div class="stat-label">Total</div>
+      <div id="total" class="stat-value">0</div>
+    </div>
+    <div class="stat clickable" id="instockCard" onclick="onStatCardClick('Stock')">
+      <div class="stat-label">In Stock</div>
+      <div id="instock" class="stat-value">0</div>
+    </div>
+    <div class="stat clickable" id="soldCard" onclick="onStatCardClick('Sold')">
+      <div class="stat-label">Sold</div>
+      <div id="sold" class="stat-value">0</div>
+    </div>
+    <div class="stat clickable" id="pendingCard" onclick="onStatCardClick('PENDING')">
+      <div class="stat-label">EMI Pending</div>
+      <div id="pendingCount" class="stat-value">0</div>
+    </div>
   </section>
 
-  <!-- LIST: scroller for mobile, table for desktop -->
-  <section id="list" class="card list-card">
-    <!-- scrollable viewport (mobile) -->
+  <!-- list -->
+  <section class="card list-card">
     <div id="listScroller" class="scroller">
       <div id="tableWrap"></div>
     </div>
-
-    <!-- desktop load more fallback -->
     <div id="desktopLoadMore" style="text-align:center;padding-top:8px;display:none">
       <button class="btn small" id="btnLoadMore" onclick="loadMore()">Load more</button>
     </div>
@@ -58,6 +65,10 @@
 </main>
 
 <script src="js/auth.js"></script>
+<script>
+  try { requireAuth(); } catch(e){ console.warn("auth check:", e); }
+  try { renderTopbarAuth(); } catch(e){ console.warn("renderTopbarAuth failed:", e); }
+</script>
 <script src="js/data.js"></script>
 <script src="js/dashboard.js"></script>
 </body>

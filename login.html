@@ -1,34 +1,75 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Login — Vehicle Finance</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Vehicle Finance</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .login-center{max-width:420px;margin:36px auto;padding:18px}
+    form.login-form label{display:block;margin-top:8px;font-weight:600;color:#0f172a}
+    input.login-input{width:100%;padding:12px;border-radius:10px;border:1px solid #e6eefc;margin-top:6px}
+    .login-note{font-size:13px;color:var(--muted);margin-top:12px}
+    .error-msg{color:var(--danger);margin-top:8px}
+  </style>
 </head>
-<body class="page-login">
-  <main class="center-card">
-    <div class="brand">
-      <div class="logo">V</div>
-      <div>
-        <h1>Vehicle Finance</h1>
-        <p class="muted">Sign in to view records</p>
-      </div>
-    </div>
+<body>
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="brand-left"><div class="logo-sm">V</div><div class="title">Vehicle Finance</div></div>
+    <div class="top-actions"></div>
+  </div>
+</header>
 
-    <div class="card card-sm">
-      <label class="field"><span>Phone</span><input id="username" placeholder="e.g. 9492126272" autocomplete="username"></label>
-      <label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password"></label>
-      <div class="row" style="gap:8px;">
-        <button class="btn primary" onclick="login()">Sign in</button>
-        <button class="btn ghost" onclick="demo()">Demo</button>
+<main class="container">
+  <div class="card login-center">
+    <h2 style="margin:0 0 8px 0">Sign in</h2>
+    <p class="muted">Enter your phone number and password.</p>
+
+    <form id="loginForm" class="login-form" onsubmit="return false;">
+      <label for="username">Username (phone)</label>
+      <input id="username" class="login-input" required placeholder="9492126272">
+      <label for="password">Password</label>
+      <input id="password" type="password" class="login-input" required placeholder="Password">
+      <div style="margin-top:12px">
+        <button id="btnLogin" class="btn" type="submit">Login</button>
       </div>
-      <p id="error" class="error"></p>
-      <p class="small muted">Use one of the seeded accounts. This is a read-only viewer.</p>
+      <div id="loginError" class="error-msg" role="alert" aria-live="polite"></div>
+    </form>
+
+    <div class="login-note">
+      This is a read-only site. Login is client-side only (keeps data private from casual visitors). Do NOT use production secrets here.
     </div>
-    <footer class="small muted">Built for mobile-first viewing • Static CSV data</footer>
-  </main>
+  </div>
+</main>
 
 <script src="js/auth.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    renderTopbarAuth();
+    const urlParams = new URLSearchParams(location.search);
+    const next = urlParams.get('next') || 'index.html';
+
+    const form = document.getElementById('loginForm');
+    const err = document.getElementById('loginError');
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      err.innerText = '';
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const res = doLogin(username, password, next);
+      if (!res.ok) {
+        err.innerText = res.message;
+        return;
+      }
+      location.href = next;
+    });
+
+    const cur = currentUser();
+    if (cur) {
+      location.href = next;
+    }
+  });
+</script>
 </body>
 </html>

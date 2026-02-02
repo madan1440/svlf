@@ -17,13 +17,11 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .brand-left{display:flex;align-items:center;gap:12px}
 .logo-sm{width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:700}
 .title{font-weight:700;font-size:18px}
-.title-small{font-weight:700;font-size:16px}
 .top-actions{display:flex;gap:8px;align-items:center}
 .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:600;background:var(--accent);color:white;box-shadow:none}
 .btn.small{padding:6px 8px;font-size:13px;border-radius:8px}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white}
 .btn.outline{background:transparent;border:1px solid #e6eefc;color:#0f172a}
-.btn.back-big{ background:var(--accent-2); color:white; padding:10px 14px; font-size:15px; border-radius:10px; font-weight:700; border:none; }
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .card-sm{padding:14px}
 .center-card{max-width:420px;margin:40px auto;padding:18px;text-align:center}
@@ -89,8 +87,7 @@ small.muted{color:var(--muted);font-size:13px}
 /* SCROLLER specifics */
 .scroller{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:6px; }
 @media (max-width:720px) {
-  /* mobile scroller: show up to ~4 stacked cards */
-  .scroller { max-height: calc(4 * 94px + 12px); /* approx 4 cards height + gaps */ }
+  .scroller { max-height: calc(4 * 94px + 12px); }
 }
 
 /* responsive mobile improvements */
@@ -124,5 +121,3 @@ small.muted{color:var(--muted);font-size:13px}
   .card { margin-bottom:10px; }
   .table th, .table td { padding:8px 8px; font-size:13px; }
 }
-
-/* desktop tweaks remain unchanged; large screens keep original look */
