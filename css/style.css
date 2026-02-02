@@ -8,10 +8,14 @@
   --stat-sold-bg:  #fff1f2;
   --stat-sold-color:#991b1b;
 }
+
+/* ---------- Base ---------- */
 *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 .container{max-width:1000px;margin:0 auto;padding:16px}
+
+/* ---------- Topbar / Buttons ---------- */
 .topbar{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:10px 0;color:white;position:sticky;top:0;z-index:50}
 .topbar .topbar-inner{display:flex;align-items:center;justify-content:space-between}
 .brand-left{display:flex;align-items:center;gap:12px}
@@ -22,6 +26,8 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .btn.small{padding:6px 8px;font-size:13px;border-radius:8px}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:white}
 .btn.outline{background:transparent;border:1px solid #e6eefc;color:#0f172a}
+
+/* ---------- Cards / layout ---------- */
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .card-sm{padding:14px}
 .center-card{max-width:420px;margin:40px auto;padding:18px;text-align:center}
@@ -35,46 +41,67 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .type-card{background:linear-gradient(180deg,#fff,#fbfdff);padding:10px 12px;border-radius:10px;border:1px solid #edf2ff;font-weight:700;cursor:pointer;color:#0f172a}
 .type-card.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
 
-/* controls */
-.controls .search-row input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6eefc;background:linear-gradient(180deg,#fff,#fbfdff)}
+/* ---------- Search (unified) ----------
+   Supports #search, .search-input, .search, and .controls .search-row input
+*/
+.controls .search-row,
+.search-row { width: 100%; }
+
+.controls .search-row input,
+.search,
+.search-input,
+#search {
+  width: 100%;
+  max-width: 100%;
+  font-size: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #e6eefc;
+  box-sizing: border-box;
+  background: linear-gradient(180deg,#fff,#fbfdff);
+  color: #0f172a;
+}
+
+/* Explicit stronger rule for your HTML input id to ensure change */
+#search,
+.controls .left input#search {
+  width: 100% !important;
+  font-size: 17px !important;
+  padding: 14px 18px !important;
+  border-radius: 12px !important;
+  border: 1px solid #dbe8ff !important;
+  background: linear-gradient(180deg,#fff,#fbfdff) !important;
+  color: #0f172a !important;
+}
+
+/* placeholder color */
+.controls .search-row input::placeholder,
+.search-input::placeholder,
+.search::placeholder,
+#search::placeholder { color: #98a3b3; font-size:15px; }
+
+/* mobile: slightly larger for tapping */
+@media (max-width: 720px) {
+  .controls .search-row input,
+  .search,
+  .search-input,
+  #search {
+    font-size: 18px !important;
+    padding: 15px 18px !important;
+  }
+}
+
+/* ---------- Filters row ---------- */
 .filters-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;align-items:center}
 .btn-group{display:flex;gap:8px}
 .chip{padding:8px 12px;border-radius:999px;border:1px solid #edf2ff;background:transparent;cursor:pointer;font-weight:600}
 .chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none}
-/* ===== Search input: wider + larger font ===== */
-.controls .search-row,
-.search-row {
-  width: 100%;                 /* ensure container is full width */
-}
 
-.controls .search-row input,
-.search {
-  width: 100%;                 /* full width of container */
-  max-width: 100%;
-  font-size: 16px;            /* desktop size (bigger than before) */
-  padding: 14px 16px;         /* taller touch target */
-  border-radius: 12px;
-  border: 1px solid #e6eefc;
-  box-sizing: border-box;
-}
-
-/* mobile: slightly larger for easier tapping */
-@media (max-width: 720px) {
-  .controls .search-row input,
-  .search {
-    font-size: 17px;
-    padding: 14px 16px;
-  }
-}
-
-
-/* summary (default desktop) */
+/* ---------- Summary / stats ---------- */
 .summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
 .stat{padding:16px;text-align:center;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(2,6,23,0.04)}
 .stat-label{color:var(--muted);font-size:13px;margin-bottom:6px}
 .stat-value{font-weight:800;font-size:20px}
-
-/* clickable stat */
 .stat.clickable{cursor:pointer;transition:transform .12s, box-shadow .12s}
 .stat.clickable:hover{transform:translateY(-4px)}
 .stat.active{box-shadow:0 10px 30px rgba(2,6,23,0.08);border:none}
@@ -85,7 +112,7 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .summary-row .stat:nth-child(3) { background: var(--stat-sold-bg); color: var(--stat-sold-color); }
 .summary-row .stat:nth-child(3) .stat-label { color: var(--stat-sold-color); }
 
-/* list */
+/* ---------- Lists / table ---------- */
 .table{width:100%;border-collapse:collapse}
 .table th, .table td{padding:10px;border-bottom:1px solid #f1f5f9;text-align:left}
 .list-card .item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;border:1px solid #f3f6fb;margin-bottom:10px;cursor:pointer;background:linear-gradient(180deg,#ffffff,#fcfdff)}
@@ -93,42 +120,34 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .item .meta .title { font-weight:700; font-size:16px; margin-bottom:4px; }
 .item .meta .sub { color:var(--muted); font-size:13px; }
 
-/* badge */
+/* badges */
 .badge{padding:6px 12px;border-radius:999px;font-weight:700;display:inline-block;min-width:74px;text-align:center}
 .badge.stock{background:#ecfdf5;color:#166534}
 .badge.sold{background:#fff1f2;color:#991b1b;border:1px solid rgba(220,38,38,0.06)}
 
-/* EMI row styles */
-.emi-paid{background:rgba(22,163,74,0.08);color:var(--paid);font-weight:700}
-.emi-pending{background:rgba(239,68,68,0.06);color:var(--danger);font-weight:700}
-.emi-upcoming{background:rgba(255,241,204,0.06);color:var(--upcoming);font-weight:700}
+/* ---------- EMI defaults (cell fallback) ---------- */
+.emi-paid{background:rgba(22,163,74,0.08); color: var(--paid); font-weight:700}
+.emi-pending{background:rgba(239,68,68,0.06); color: var(--danger); font-weight:700}
+.emi-upcoming{background:rgba(255,241,204,0.06); color: var(--upcoming); font-weight:700}
 
 /* link styling */
 .linknum{color:var(--accent);text-decoration:none;font-weight:700;display:inline-block;padding:6px 0}
 
-/* detail */
+/* detail card */
 .detail-card h2{margin:0 0 6px 0}
 small.muted{color:var(--muted);font-size:13px}
 
-/* SCROLLER specifics */
+/* scroller specifics */
 .scroller{ overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:6px; }
 @media (max-width:720px) {
   .scroller { max-height: calc(4 * 94px + 12px); }
 }
 
-/* EMI delay highlighting */
-.delay-low {
-  color: #d97706; /* amber */
-  font-weight: 600;
-}
+/* ---------- Delay cell text coloring ---------- */
+.delay-low { color: #d97706; font-weight: 600; }    /* 1-2 days */
+.delay-high { color: #dc2626; font-weight: 700; }   /* >2 days */
 
-.delay-high {
-  color: #dc2626; /* red */
-  font-weight: 700;
-}
-
-
-/* responsive mobile improvements */
+/* ---------- Responsive / mobile ---------- */
 @media(max-width:720px){
   .topbar{padding:8px 0}
   .logo-sm{width:40px;height:40px}
@@ -160,30 +179,10 @@ small.muted{color:var(--muted);font-size:13px}
   .table th, .table td { padding:8px 8px; font-size:13px; }
 }
 
-/* --- EMI schedule table mobile readability boost --- */
+/* EMI table mobile readability boost */
 @media (max-width: 720px) {
-
-  /* Only EMI table – not all tables */
-  #emiTable {
-    font-size: 15px;
-  }
-
-  #emiTable th {
-    font-size: 14px;
-    font-weight: 700;
-    padding: 10px 8px;
-    white-space: nowrap;
-  }
-
-  #emiTable td {
-    font-size: 14px;
-    padding: 12px 8px;
-    line-height: 1.45;
-  }
-
-  /* Smooth horizontal scroll if needed */
-  .card {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  #emiTable { font-size: 15px; }
+  #emiTable th { font-size: 14px; font-weight: 700; padding: 10px 8px; white-space: nowrap; }
+  #emiTable td { font-size: 14px; padding: 12px 8px; line-height: 1.45; }
+  .card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
