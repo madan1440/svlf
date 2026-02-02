@@ -121,3 +121,31 @@ small.muted{color:var(--muted);font-size:13px}
   .card { margin-bottom:10px; }
   .table th, .table td { padding:8px 8px; font-size:13px; }
 }
+
+/* --- EMI schedule table mobile readability boost --- */
+@media (max-width: 720px) {
+
+  /* Only EMI table – not all tables */
+  #emiTable {
+    font-size: 15px;
+  }
+
+  #emiTable th {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 8px;
+    white-space: nowrap;
+  }
+
+  #emiTable td {
+    font-size: 14px;
+    padding: 12px 8px;
+    line-height: 1.45;
+  }
+
+  /* Smooth horizontal scroll if needed */
+  .card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
