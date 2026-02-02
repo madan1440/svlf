@@ -63,10 +63,10 @@ async function loadView() {
   const emiForVehicle = emis.filter(e => String(e.vehicle_id) === String(vid));
   renderEmiTable(emiForVehicle, vid);
 }
+
 function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
   const tbody = document.querySelector('#emiTable tbody');
   if (!tbody) return;
-
   if (!rows.length) {
     tbody.innerHTML = '<tr><td colspan="5" class="muted">No EMIs found</td></tr>';
     return;
@@ -76,31 +76,24 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
     .filter(e => !pendingOnly || (e.display_status && e.display_status.toLowerCase() === 'overdue'))
     .map(e => {
       const delay = (e.computed_delay_days !== null && e.computed_delay_days !== undefined)
-        ? e.computed_delay_days
-        : (e.delay_days !== null ? e.delay_days : "");
-
+                    ? e.computed_delay_days
+                    : (e.delay_days !== null ? e.delay_days : "");
       const statusDisplay = e.display_status || (e.status || "");
-      const statusClass = e.status_class || "";
-
+      const statusClass = e.status_class || "";    
       const delayNum = Number(delay);
-      let delayClass = "";
-      if (!isNaN(delayNum)) {
-        if (delayNum > 2) delayClass = "delay-high";
-        else if (delayNum > 0) delayClass = "delay-low";
-      }
-
-      /* ✅ NEW: row-level class */
-      const rowClass = `${statusClass} ${delayClass}`.trim();
-
-      return `<tr class="${rowClass}">
+                let delayClass = "";
+                if (!isNaN(delayNum)) {
+                  if (delayNum > 2) delayClass = "delay-high";
+                  else if (delayNum > 0) delayClass = "delay-low";
+                }  
+      return `<tr>
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
         <td class="${statusClass}">${escapeHtml(statusDisplay)}</td>
-        <td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>
+        <<td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>        
       </tr>`;
     }).join("");
-
   tbody.innerHTML = html;
 }
 
