@@ -40,6 +40,25 @@ async function loadView() {
   } else {
     sellerCard.innerHTML = `<h3>Seller Information</h3><p class="muted">No seller info</p>`;
   }
+  
+  const buyerCard = document.getElementById('buyerCard');
+  if (v && v.buyer_name) {
+    buyerCard.innerHTML = `
+      <h3>Buyer & Finance Information</h3>
+      <p><strong>Name:</strong> ${escapeHtml(v.buyer_name)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(v.buyer_phone || '')}</p>
+      <p><strong>Address:</strong> ${escapeHtml(v.buyer_address || '')}</p>
+      <p><strong>Sale Value:</strong> ${v.sale_value ? '₹' + v.sale_value : ''}</p>
+      <p><strong>Finance Amount:</strong> ${v.finance_amount ? '₹' + v.finance_amount : ''}</p>
+      <p><strong>Tenure:</strong> ${escapeHtml(v.tenure || '')} months</p>
+      <p><strong>Sale Date:</strong> ${escapeHtml(v.sale_date || '')}</p>
+    `;
+  } else {
+    buyerCard.innerHTML = `
+      <h3>Buyer & Finance Information</h3>
+      <p class="muted">No buyer info</p>
+    `;
+  }
 
   const emiForVehicle = emis.filter(e => String(e.vehicle_id) === String(vid));
   renderEmiTable(emiForVehicle, vid);
