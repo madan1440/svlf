@@ -41,6 +41,32 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .btn-group{display:flex;gap:8px}
 .chip{padding:8px 12px;border-radius:999px;border:1px solid #edf2ff;background:transparent;cursor:pointer;font-weight:600}
 .chip.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:none}
+/* ===== Search input: wider + larger font ===== */
+.controls .search-row,
+.search-row {
+  width: 100%;                 /* ensure container is full width */
+}
+
+.controls .search-row input,
+.search {
+  width: 100%;                 /* full width of container */
+  max-width: 100%;
+  font-size: 16px;            /* desktop size (bigger than before) */
+  padding: 14px 16px;         /* taller touch target */
+  border-radius: 12px;
+  border: 1px solid #e6eefc;
+  box-sizing: border-box;
+}
+
+/* mobile: slightly larger for easier tapping */
+@media (max-width: 720px) {
+  .controls .search-row input,
+  .search {
+    font-size: 17px;
+    padding: 14px 16px;
+  }
+}
+
 
 /* summary (default desktop) */
 .summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
