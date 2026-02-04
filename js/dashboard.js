@@ -1,5 +1,6 @@
 // js/dashboard.js
 let VEH = [], EMI = [], FILTERED_LIST = [];
+let EMI_BY_VEHICLE = new Map();
 let displayedCount = 0;
 const PAGE_SIZE = 20;
 let CURRENT_TYPE = 'ALL', CURRENT_STATUS = 'ALL', PENDING_MODE = false;
@@ -15,6 +16,7 @@ async function loadDashboard() {
       VEH = window.parseCSV ? window.parseCSV(vRaw, ",") : [];
       EMI = window.parseCSV ? window.parseCSV(eRaw, ",") : [];
     }
+    buildEmiIndex();
     console.info("Loaded vehicles:", VEH.length, "emis:", EMI.length);
     updateSummaryCounts();
     setActiveTypeCard('ALL');
@@ -26,6 +28,19 @@ async function loadDashboard() {
     toggleDesktopLoadMore();
   } catch (e) {
     console.error("loadDashboard error:", e);
+  }
+}
+
+function buildEmiIndex() {
+  EMI_BY_VEHICLE = new Map();
+  if (!Array.isArray(EMI)) return;
+  for (const e of EMI) {
+    if (!e) continue;
+    const vid = String(e.vehicle_id || "");
+    if (!vid) continue;
+    const list = EMI_BY_VEHICLE.get(vid);
+    if (list) list.push(e);
+    else EMI_BY_VEHICLE.set(vid, [e]);
   }
 }
 
@@ -110,7 +125,7 @@ function applyFilters(){
     const today = new Date(); today.setHours(0,0,0,0);
     list = list.filter(v=>{
       const vid = String(v.vehicle_id || v.id || "");
-      const related = EMI.filter(e => String(e.vehicle_id || "") === vid);
+      const related = EMI_BY_VEHICLE.get(vid) || [];
       return related.some(r => {
         const paid = (r.paid_date && r.paid_date.trim()!=='') || (r.status && String(r.status).toLowerCase()==='paid');
         const due = window.toDateSafe ? window.toDateSafe(r.due_date) : new Date(r.due_date);
@@ -184,6 +199,20 @@ function toggleDesktopLoadMore(){
   } else {
     desktopBox.style.display = 'none';
   }
+}
+
+function triggerDownload(path, filename) {
+  const link = document.createElement('a');
+  link.href = path;
+  link.download = filename || '';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function downloadCSVs() {
+  triggerDownload('data/full.csv', 'full.csv');
+  triggerDownload('data/emi.csv', 'emi.csv');
 }
 
 function escapeHtml(s) {
