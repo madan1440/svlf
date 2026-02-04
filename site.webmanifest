@@ -1,0 +1,9 @@
+{
+  "name": "SVLF",
+  "short_name": "SVLF",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0b1532",
+  "theme_color": "#0b1532",
+  "icons": []
+}

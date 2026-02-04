@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vehicle Finance — Dashboard</title>
+  <title>SVLF — Dashboard</title>
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#0b1532">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="topbar">
   <div class="container topbar-inner">
     <div class="brand-left">
-      <div class="logo-sm">V</div>
-      <div class="title">Vehicle Finance</div>
+      <div class="logo-sm">S</div>
+      <div class="title">SVLF</div>
     </div>
     <div class="top-actions">
       <button class="btn ghost icon-btn" type="button" onclick="downloadCSVs()" aria-label="Download CSVs" title="Download CSVs">⬇</button>
@@ -24,7 +26,7 @@
   <section class="card">
     <div class="controls">
       <div class="left" style="width:100%;">
-        <input id="search" class="search-input" placeholder="Search name / brand / model / vehicle number" oninput="applyFilters()" />
+        <input id="search" class="search-input" placeholder="Search name, brand, model, number, seller/buyer info" oninput="applyFilters()" />
       </div>
     </div>
 
