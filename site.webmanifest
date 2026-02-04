@@ -5,5 +5,11 @@
   "display": "standalone",
   "background_color": "#0b1532",
   "theme_color": "#0b1532",
-  "icons": []
+  "icons": [
+    {
+      "src": "assets/svlf-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
