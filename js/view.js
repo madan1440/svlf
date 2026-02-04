@@ -36,6 +36,7 @@ async function loadView() {
       <p><strong>City:</strong> ${escapeHtml(v.seller_city || '')}</p>
       <p><strong>Buy Value:</strong> ${v.buy_value ? '₹' + v.buy_value : ''}</p>
       <p><strong>Buy Date:</strong> ${escapeHtml(v.buy_date || '')}</p>
+      <p><strong>Comments:</strong> ${escapeHtml(v.comments || '')}</p>
     `;
   } else {
     sellerCard.innerHTML = `<h3>Seller Information</h3><p class="muted">No seller info</p>`;
