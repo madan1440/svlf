@@ -48,8 +48,14 @@ function renderTopbarAuth() {
     actions.className = 'top-actions';
     parent.appendChild(actions);
   }
+  let authWrap = actions.querySelector('.auth-actions');
+  if (!authWrap) {
+    authWrap = document.createElement('div');
+    authWrap.className = 'auth-actions';
+    actions.appendChild(authWrap);
+  }
   const u = currentUser();
-  actions.innerHTML = '';
+  authWrap.innerHTML = '';
   if (u) {
     const span = document.createElement('div');
     span.style.display = 'flex';
@@ -57,7 +63,7 @@ function renderTopbarAuth() {
     span.style.gap = '10px';
     span.innerHTML = `<div style="font-weight:700;color:rgba(255,255,255,0.95)">${escapeHtml(u.username)} (${escapeHtml(u.role)})</div>
                       <button class="btn small" id="btnLogout">Logout</button>`;
-    actions.appendChild(span);
+    authWrap.appendChild(span);
     const btn = document.getElementById('btnLogout');
     if (btn) btn.addEventListener('click', logout);
   } else {
@@ -65,7 +71,7 @@ function renderTopbarAuth() {
     a.href = 'login.html';
     a.className = 'btn small';
     a.innerText = 'Login';
-    actions.appendChild(a);
+    authWrap.appendChild(a);
   }
 }
 function doLogin(username, password, next) {
