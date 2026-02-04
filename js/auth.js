@@ -1,7 +1,7 @@
 // js/auth.js
 const STATIC_USERS = [
   { username: "9492126272", password: "Madan@1440", role: "admin", name: "Admin One" },
-  { username: "9490479284", password: "Laxmi@6799", role: "admin", name: "Admin Two" },
+  { username: "9490479284", password: "Laxmi@6799", role: "user", name: "User Two" },
   { username: "9492146644", password: "Rupa@0642", role: "user", name: "User One" },
   { username: "9492948661", password: "Venky@8661", role: "user", name: "User Two" }
 ];

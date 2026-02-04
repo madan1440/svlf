@@ -22,6 +22,7 @@ async function loadDashboard() {
     setActiveTypeCard('ALL');
     setActiveStatCard('ALL');
     applyFilters();
+    updateDownloadAccess();
     const scroller = document.getElementById('listScroller');
     if (scroller) scroller.addEventListener('scroll', onScrollerScroll);
     window.addEventListener('resize', ()=> toggleDesktopLoadMore());
@@ -29,6 +30,16 @@ async function loadDashboard() {
   } catch (e) {
     console.error("loadDashboard error:", e);
   }
+}
+
+function updateDownloadAccess() {
+  const btn = document.querySelector('.top-actions .icon-btn');
+  if (!btn) return;
+  const u = window.currentUser ? window.currentUser() : null;
+  const isAdmin = u && u.role === 'admin';
+  btn.disabled = !isAdmin;
+  btn.setAttribute('aria-disabled', String(!isAdmin));
+  btn.title = isAdmin ? 'Download CSVs' : 'Downloads are disabled for users';
 }
 
 function buildEmiIndex() {
@@ -135,7 +146,17 @@ function applyFilters(){
     });
   }
   if(q){
-    list = list.filter(v=> ( (v.name||'')+' '+(v.brand||'')+' '+(v.model||'')+' '+(v.number||'') ).toLowerCase().includes(q));
+    list = list.filter(v=> (
+      (v.name||'')+' '+
+      (v.brand||'')+' '+
+      (v.model||'')+' '+
+      (v.number||'')+' '+
+      (v.seller_name||'')+' '+
+      (v.seller_phone||'')+' '+
+      (v.seller_city||'')+' '+
+      (v.buyer_name||'')+' '+
+      (v.buyer_phone||'')
+    ).toLowerCase().includes(q));
   }
   FILTERED_LIST = list;
   displayedCount = Math.min(PAGE_SIZE, FILTERED_LIST.length);
