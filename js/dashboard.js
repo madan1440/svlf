@@ -3,7 +3,7 @@ let VEH = [], EMI = [], FILTERED_LIST = [];
 let EMI_BY_VEHICLE = new Map();
 let displayedCount = 0;
 const PAGE_SIZE = 20;
-let CURRENT_TYPE = 'ALL', CURRENT_STATUS = 'ALL', PENDING_MODE = false;
+let CURRENT_TYPE = 'Bike', CURRENT_STATUS = 'ALL', PENDING_MODE = false;
 
 async function loadDashboard() {
   try {
@@ -19,7 +19,7 @@ async function loadDashboard() {
     buildEmiIndex();
     console.info("Loaded vehicles:", VEH.length, "emis:", EMI.length);
     updateSummaryCounts();
-    setActiveTypeCard('ALL');
+    setActiveTypeCard(CURRENT_TYPE);
     setActiveStatCard('ALL');
     applyFilters();
     updateDownloadAccess();
@@ -58,25 +58,37 @@ function buildEmiIndex() {
 async function updateSummaryCounts() {
   if (!Array.isArray(VEH)) VEH = [];
   if (!Array.isArray(EMI)) EMI = [];
-  const total = VEH.length;
-  const sold = VEH.filter(v=> String((v.status||'')).toLowerCase() === 'sold').length;
+
+  const vehiclesForType = CURRENT_TYPE
+    ? VEH.filter(v => (v.type || '') === CURRENT_TYPE)
+    : VEH.slice();
+
+  const total = vehiclesForType.length;
+  const sold = vehiclesForType.filter(v => String((v.status || '')).toLowerCase() === 'sold').length;
   const instock = total - sold;
-  const today = new Date(); today.setHours(0,0,0,0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const vehicleIdsForType = new Set(vehiclesForType.map(v => String(v.vehicle_id || "")).filter(Boolean));
   const pendingSet = new Set();
+
   for (const e of EMI) {
     if (!e) continue;
+    const vid = String(e.vehicle_id || "");
+    if (!vid || !vehicleIdsForType.has(vid)) continue;
+
     const dueStr = e.due_date || e.due || "";
     if (!dueStr) continue;
     const due = window.toDateSafe ? window.toDateSafe(dueStr) : new Date(dueStr);
     if (!due || isNaN(due.getTime())) continue;
+
     const paidDate = e.paid_date || "";
     const csvStatus = e.status || "";
     const isPaid = (paidDate && paidDate.trim() !== "") || (String(csvStatus).toLowerCase() === 'paid');
-    if (!isPaid && due < today) {
-      const vid = String(e.vehicle_id || "");
-      if (vid) pendingSet.add(vid);
-    }
+
+    if (!isPaid && due < today) pendingSet.add(vid);
   }
+
   const pendingVehicles = pendingSet.size;
   const elTotal = document.getElementById('total');
   const elInstock = document.getElementById('instock');
@@ -86,23 +98,26 @@ async function updateSummaryCounts() {
   if (elInstock) elInstock.innerText = instock;
   if (elSold) elSold.innerText = sold;
   if (elPending) elPending.innerText = pendingVehicles;
+
   return { total, instock, sold, pendingVehicles };
 }
 
+
 function onTypeCardClick(e){
   const btn = e.currentTarget || e.target;
-  const t = btn.dataset.type || 'ALL';
+  const t = btn.dataset.type || 'Bike';
   CURRENT_TYPE = t;
   PENDING_MODE = false;
   CURRENT_STATUS = 'ALL';
   setActiveTypeCard(t);
   setActiveStatCard('ALL');
+  updateSummaryCounts();
   applyFilters();
 }
 
 function setActiveTypeCard(type){
   document.querySelectorAll('.type-card').forEach(el=> el.classList.remove('active'));
-  const sel = type === 'ALL' ? document.getElementById('typeAll') : (type === 'Car' ? document.getElementById('typeCar') : document.getElementById('typeBike'));
+  const sel = type === 'Car' ? document.getElementById('typeCar') : document.getElementById('typeBike');
   if (sel) sel.classList.add('active');
 }
 
@@ -110,7 +125,7 @@ function onStatCardClick(mode){
   if(mode === 'PENDING'){
     PENDING_MODE = !PENDING_MODE;
     setActiveStatCard(PENDING_MODE ? 'PENDING' : 'ALL');
-    if(PENDING_MODE){ CURRENT_STATUS = 'ALL'; CURRENT_TYPE = 'ALL'; setActiveTypeCard('ALL'); }
+    if(PENDING_MODE){ CURRENT_STATUS = 'ALL'; }
   } else {
     PENDING_MODE = false;
     CURRENT_STATUS = mode;
@@ -130,7 +145,7 @@ function setActiveStatCard(mode){
 function applyFilters(){
   const q = (document.getElementById('search').value||'').toLowerCase().trim();
   let list = VEH.slice();
-  if(CURRENT_TYPE && CURRENT_TYPE !== 'ALL') list = list.filter(v=> (v.type||'')===CURRENT_TYPE);
+  if(CURRENT_TYPE) list = list.filter(v=> (v.type||'')===CURRENT_TYPE);
   if(CURRENT_STATUS && CURRENT_STATUS !== 'ALL') list = list.filter(v=> (v.status||'')===CURRENT_STATUS);
   if(PENDING_MODE){
     const today = new Date(); today.setHours(0,0,0,0);

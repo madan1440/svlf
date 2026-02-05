@@ -46,6 +46,7 @@ async function loadView() {
   if (v && v.buyer_name) {
     buyerCard.innerHTML = `
       <h3>Buyer & Finance Information</h3>
+      <p><strong>Record Number:</strong> ${escapeHtml(String(v.vehicle_id || ''))}</p>
       <p><strong>Name:</strong> ${escapeHtml(v.buyer_name)}</p>
       <p><strong>Phone:</strong> ${escapeHtml(v.buyer_phone || '')}</p>
       <p><strong>Address:</strong> ${escapeHtml(v.buyer_address || '')}</p>
@@ -57,6 +58,7 @@ async function loadView() {
   } else {
     buyerCard.innerHTML = `
       <h3>Buyer & Finance Information</h3>
+      <p><strong>Record Number:</strong> ${escapeHtml(String((v && v.vehicle_id) || ''))}</p>
       <p class="muted">No buyer info</p>
     `;
   }
@@ -91,7 +93,7 @@ function renderEmiTable(rows = [], vid = null, pendingOnly = false) {
         <td>${escapeHtml(String(e.emi_no || ""))}</td>
         <td>${escapeHtml(e.due_date || "")}</td>
         <td>₹${escapeHtml(String(e.amount || ""))}</td>
-        <td class="${statusClass}">${escapeHtml(statusDisplay)}</td>
+        <td><span class="emi-status-pill ${statusClass}">${escapeHtml(statusDisplay)}</span></td>
         <td class="${delayClass}">${escapeHtml(delay === "" ? "" : String(delay))}</td>        
       </tr>`;
     }).join("");

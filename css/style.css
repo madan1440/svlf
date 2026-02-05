@@ -33,6 +33,16 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
   cursor:not-allowed;
 }
 
+
+.big-back-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:18px;
+  padding:12px 18px;
+  margin-bottom:12px;
+  text-decoration:none;
+}
 /* ---------- Cards / layout ---------- */
 .card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .card-sm{padding:14px}
@@ -112,11 +122,15 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .stat.clickable:hover{transform:translateY(-4px)}
 .stat.active{box-shadow:0 10px 30px rgba(2,6,23,0.08);border:none}
 
-/* color the Instock and Sold cards */
+/* color summary cards */
+.summary-row .stat:nth-child(1) { background: #eff6ff; color: #1d4ed8; }
+.summary-row .stat:nth-child(1) .stat-label { color: #1d4ed8; }
 .summary-row .stat:nth-child(2) { background: var(--stat-stock-bg); color: var(--stat-stock-color); }
 .summary-row .stat:nth-child(2) .stat-label { color: var(--stat-stock-color); }
 .summary-row .stat:nth-child(3) { background: var(--stat-sold-bg); color: var(--stat-sold-color); }
 .summary-row .stat:nth-child(3) .stat-label { color: var(--stat-sold-color); }
+.summary-row .stat:nth-child(4) { background: #fff7ed; color: #c2410c; }
+.summary-row .stat:nth-child(4) .stat-label { color: #c2410c; }
 
 /* ---------- Lists / table ---------- */
 .table{width:100%;border-collapse:collapse}
@@ -132,9 +146,10 @@ body{margin:0;background:var(--bg);color:#0f172a;-webkit-font-smoothing:antialia
 .badge.sold{background:#fff1f2;color:#991b1b;border:1px solid rgba(220,38,38,0.06)}
 
 /* ---------- EMI defaults (cell fallback) ---------- */
-.emi-paid{background:rgba(22,163,74,0.08); color: var(--paid); font-weight:700}
-.emi-pending{background:rgba(239,68,68,0.06); color: var(--danger); font-weight:700}
-.emi-upcoming{background:rgba(255,241,204,0.06); color: var(--upcoming); font-weight:700}
+.emi-paid,.emi-pending,.emi-upcoming{font-weight:700;text-align:center;}
+.emi-paid{background:#dcfce7;color:#065f46;border-radius:10px;}
+.emi-pending{background:#fef3c7;color:#b45309;border-radius:10px;}
+.emi-upcoming{background:#e0e7ff;color:#3730a3;border-radius:10px;}
 
 /* link styling */
 .linknum{color:var(--accent);text-decoration:none;font-weight:700;display:inline-block;padding:6px 0}
@@ -192,3 +207,5 @@ small.muted{color:var(--muted);font-size:13px}
   #emiTable td { font-size: 14px; padding: 12px 8px; line-height: 1.45; }
   .card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
+
+.emi-status-pill{display:inline-block;padding:6px 14px;border-radius:12px;min-width:92px;}
