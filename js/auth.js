@@ -61,8 +61,7 @@ function renderTopbarAuth() {
     span.style.display = 'flex';
     span.style.alignItems = 'center';
     span.style.gap = '10px';
-    span.innerHTML = `<div style="font-weight:700;color:rgba(255,255,255,0.95)">${escapeHtml(u.username)} (${escapeHtml(u.role)})</div>
-                      <button class="btn small" id="btnLogout">Logout</button>`;
+    span.innerHTML = `<button class="btn small" id="btnLogout">Logout</button>`;
     authWrap.appendChild(span);
     const btn = document.getElementById('btnLogout');
     if (btn) btn.addEventListener('click', logout);
