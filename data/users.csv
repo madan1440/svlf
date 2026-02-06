@@ -1,0 +1,5 @@
+id,username,name,password_hash,role
+1,9492126272,Admin One,pbkdf2:sha256:260000$hzmV9abNUIMuIcm1$1aa763b5ecb2629effe0b01dc1e7a6cf017f005819666f3ca8acd6fbbe1f33f9,admin
+2,9490479284,Admin Two,pbkdf2:sha256:260000$vlnsxSt72Y2kcDel$cd8a3b0b390a936a2fdc2b5a15067e6933e9d31124fb74d99ae890621d419cb2,admin
+3,9492146644,User One,pbkdf2:sha256:260000$UeSivRreDDnrWJTD$4183114785777745e9f88f4b139141ed17dcdca32b88dec1ab7e94259a8cfd18,user
+4,9492948661,User Two,pbkdf2:sha256:260000$3CSkr2bnJfFVKRzH$08a6a8804eb7d6c4d0a8f069f4abd41468424a45e20bfccc1f82de8fb15e66b3,user

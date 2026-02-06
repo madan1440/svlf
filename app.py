@@ -951,14 +951,46 @@ def admin_export_csv():
 # ----------------- Templates -----------------
 # (kept concise and consistent: use 'e' as emi loop var)
 LOGIN_HTML = """<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login</title><style>body{font-family:Inter;background:#f1f5f9;padding:20px}form{max-width:420px;margin:40px auto;background:white;padding:20px;border-radius:8px}label{display:block;margin-top:8px}</style></head><body>
-<form method="post">
-  <h2>Login</h2>
-  {% if error %}<div style="color:red">{{ error }}</div>{% endif %}
-  <label>Username (phone)</label><input name="username" required>
-  <label>Password</label><input name="password" type="password" required>
-  <div style="margin-top:12px"><button type="submit">Login</button></div>
-</form></body></html>"""
+<title>Login</title>
+<style>
+:root{--bg:#0b1220;--bg2:#111827;--card:#ffffff;--text:#0f172a;--muted:#64748b;--primary:#2563eb;--primary2:#1d4ed8;--danger:#dc2626}
+*{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 600px at 10% 10%,#1e3a8a55,transparent 60%),radial-gradient(1000px 500px at 90% 90%,#0891b255,transparent 60%),linear-gradient(135deg,var(--bg),var(--bg2));padding:20px}
+.auth-wrap{width:100%;max-width:430px}
+.auth-card{background:var(--card);border:1px solid #e2e8f0;border-radius:20px;padding:28px;box-shadow:0 25px 55px rgba(2,6,23,.35)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#06b6d4);display:grid;place-items:center;color:#fff;font-weight:800}
+h1{margin:0;font-size:1.35rem;color:var(--text)}
+.sub{margin:4px 0 0;color:var(--muted);font-size:.93rem}
+label{display:block;margin:12px 0 6px;font-weight:600;color:#334155;font-size:.92rem}
+input{width:100%;padding:11px 12px;border-radius:12px;border:1px solid #cbd5e1;background:#fff;font-size:.95rem;outline:none;transition:.2s}
+input:focus{border-color:var(--primary);box-shadow:0 0 0 4px #2563eb22}
+.actions{margin-top:16px;display:flex;justify-content:flex-end}
+button{border:none;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-weight:700;padding:11px 16px;border-radius:12px;cursor:pointer;transition:.2s}
+button:hover{transform:translateY(-1px);filter:brightness(1.03)}
+.error{margin:10px 0;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;color:var(--danger);font-size:.9rem}
+.hint{margin-top:12px;color:#94a3b8;font-size:.82rem;text-align:center}
+</style>
+</head><body>
+<div class="auth-wrap">
+  <form method="post" class="auth-card" autocomplete="on">
+    <div class="brand">
+      <div class="logo">SV</div>
+      <div>
+        <h1>Welcome back</h1>
+        <p class="sub">Sign in to continue to the dashboard</p>
+      </div>
+    </div>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <label for="username">Username (phone)</label>
+    <input id="username" name="username" inputmode="numeric" autocomplete="username" placeholder="Enter phone number" required>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required>
+    <div class="actions"><button type="submit">Login</button></div>
+    <div class="hint">Secure access for authorized users only.</div>
+  </form>
+</div>
+</body></html>"""
 
 BASE_CSS = """
 <style>
