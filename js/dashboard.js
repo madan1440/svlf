@@ -1,6 +1,7 @@
 // js/dashboard.js
 let VEH = [], EMI = [], FILTERED_LIST = [];
 let EMI_BY_VEHICLE = new Map();
+let BUYER_TO_VEHICLE = new Map();
 let displayedCount = 0;
 const PAGE_SIZE = 20;
 let CURRENT_TYPE = 'Bike', CURRENT_STATUS = 'ALL', PENDING_MODE = false;
@@ -41,13 +42,32 @@ function updateDownloadAccess() {
   btn.setAttribute('aria-disabled', String(!isAdmin));
   btn.title = isAdmin ? 'Download CSVs' : 'Downloads are disabled for users';
 }
+function buildBuyerVehicleIndex() {
+  BUYER_TO_VEHICLE = new Map();
+  if (!Array.isArray(VEH)) return;
+  for (const v of VEH) {
+    if (!v) continue;
+    const buyerId = String(v.buyer_id || "").trim();
+    const vehicleId = String(v.vehicle_id || v.id || "").trim();
+    if (buyerId && vehicleId) BUYER_TO_VEHICLE.set(buyerId, vehicleId);
+  }
+}
+
+function resolveVehicleIdForEmi(e) {
+  const directVehicleId = String((e && (e.vehicle_id || e.vehicleid)) || "").trim();
+  if (directVehicleId) return directVehicleId;
+  const buyerId = String((e && e.buyer_id) || "").trim();
+  if (!buyerId) return "";
+  return BUYER_TO_VEHICLE.get(buyerId) || "";
+}
 
 function buildEmiIndex() {
   EMI_BY_VEHICLE = new Map();
+  buildBuyerVehicleIndex();
   if (!Array.isArray(EMI)) return;
   for (const e of EMI) {
     if (!e) continue;
-    const vid = String(e.vehicle_id || "");
+    const vid = resolveVehicleIdForEmi(e);
     if (!vid) continue;
     const list = EMI_BY_VEHICLE.get(vid);
     if (list) list.push(e);
@@ -74,7 +94,7 @@ async function updateSummaryCounts() {
 
   for (const e of EMI) {
     if (!e) continue;
-    const vid = String(e.vehicle_id || "");
+    const vid = resolveVehicleIdForEmi(e);
     if (!vid || !vehicleIdsForType.has(vid)) continue;
 
     const dueStr = e.due_date || e.due || "";
