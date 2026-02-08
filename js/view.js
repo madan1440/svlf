@@ -46,7 +46,7 @@ async function loadView() {
   if (v && v.buyer_name) {
     buyerCard.innerHTML = `
       <h3>Buyer & Finance Information</h3>
-      <p><strong>Record Number:</strong> ${escapeHtml(String(v.vehicle_id || ''))}</p>
+      <p><strong>Record Number:</strong> ${escapeHtml(String(v.record_no || v.vehicle_id || ''))}</p>
       <p><strong>Name:</strong> ${escapeHtml(v.buyer_name)}</p>
       <p><strong>Phone:</strong> ${escapeHtml(v.buyer_phone || '')}</p>
       <p><strong>Address:</strong> ${escapeHtml(v.buyer_address || '')}</p>
@@ -58,12 +58,15 @@ async function loadView() {
   } else {
     buyerCard.innerHTML = `
       <h3>Buyer & Finance Information</h3>
-      <p><strong>Record Number:</strong> ${escapeHtml(String((v && v.vehicle_id) || ''))}</p>
+      <p><strong>Record Number:</strong> ${escapeHtml(String((v && (v.record_no || v.vehicle_id)) || ''))}</p>
       <p class="muted">No buyer info</p>
     `;
   }
 
-  const emiForVehicle = emis.filter(e => String(e.vehicle_id) === String(vid));
+  const buyerId = v ? v.buyer_id : null;
+  const emiForVehicle = emis
+    .filter(e => buyerId && String(e.buyer_id) === String(buyerId))
+    .sort((a, b) => Number(a.emi_no || 0) - Number(b.emi_no || 0));
   renderEmiTable(emiForVehicle, vid);
 }
 
