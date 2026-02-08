@@ -809,17 +809,23 @@ def edit_buyer(vid):
 
     return render_template_string(EDIT_BUYER_HTML, buyer=buyer, vid=vid)
 
-# Toggle EMI (admin)
+# Toggle EMI (admin) — accept optional paid_date from form
 @app.route("/emi/toggle/<int:emi_id>", methods=["POST"])
 @admin_required
 def toggle_emi(emi_id):
     action = request.form.get("action")
+    paid_date_str = (request.form.get("paid_date") or "").strip()
     emis_rows = load_emi_rows()
     for row in emis_rows:
         if to_int(row.get("id") or 0) == emi_id:
             if action == "mark_paid":
+                # prefer user-provided date, but fall back to today
+                pd = parse_iso_date(paid_date_str)
+                if pd:
+                    row["paid_date"] = pd.isoformat()
+                else:
+                    row["paid_date"] = date.today().isoformat()
                 row["status"] = "Paid"
-                row["paid_date"] = date.today().isoformat()
                 log_action(session.get("username"), "mark_emi_paid", str(emi_id))
             else:
                 row["status"] = "Unpaid"
@@ -1350,14 +1356,17 @@ VIEW_HTML = """
         </td>
         <td>
           {% if current_role == 'admin' %}
-            <form method="post" action="{{ url_for('toggle_emi', emi_id=e.id) }}" style="display:inline">
-              <input type="hidden" name="ref" value="{{ url_for('view_vehicle', vid=v.id) }}">
-              {% if e.status != 'Paid' %}
-                <button class="small-btn btn" name="action" value="mark_paid" onclick="return confirm('Mark EMI #{{ e.emi_no }} as PAID?')">Mark Paid</button>
-              {% else %}
-                <button class="small-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:8px" name="action" value="mark_unpaid" onclick="return confirm('Mark EMI #{{ e.emi_no }} as UNPAID?')">Mark Unpaid</button>
-              {% endif %}
+            <form method="post" action="{{ url_for('toggle_emi', emi_id=e.id) }}" id="emi-form-{{ e.id }}" style="display:inline">
+                <input type="hidden" name="ref" value="{{ url_for('view_vehicle', vid=v.id) }}">
+                <input type="hidden" name="paid_date" value="">
+                {% if e.status != 'Paid' %}
+                    <button type="button" class="small-btn btn" onclick="openPaidModal('{{ e.id }}','{{ e.emi_no }}')">Mark Paid</button>
+                {% else %}
+                    <button class="small-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:8px" name="action" value="mark_unpaid" onclick="return confirm('Mark EMI #{{ e.emi_no }} as UNPAID?')">Mark Unpaid</button>
+                {% endif %}
+                <!-- the actual action value for 'mark_paid' is set when the modal confirm is pressed -->
             </form>
+
           {% else %}
             -
           {% endif %}
@@ -1371,7 +1380,86 @@ VIEW_HTML = """
   {% else %}
   <div class="card"><h3>No buyer recorded</h3>{% if current_role == 'admin' %}<a class="btn" href="{{ url_for('sell_vehicle', vid=v.id) }}">Sell this vehicle</a>{% endif %}</div>
   {% endif %}
-</div></body></html>
+<!-- Paid date modal (simple) -->
+<div id="paidDateModal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;z-index:9999">
+  <div style="background:white;padding:18px;border-radius:10px;min-width:260px;max-width:90%;box-shadow:0 8px 30px rgba(2,6,23,0.2)">
+    <h4 style="margin:0 0 8px">Select paid date</h4>
+    <div style="margin-bottom:12px">
+      <input id="paidDateInput" type="date" style="padding:8px;border-radius:6px;border:1px solid #ddd;width:100%">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button type="button" onclick="closePaidModal()" style="padding:8px 10px;border-radius:6px;border:1px solid #cbd5e1;background:#fff">Cancel</button>
+      <button type="button" onclick="confirmPaidDate()" style="padding:8px 10px;border-radius:6px;background:#2563eb;color:#fff;border:none">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // small client-side helper to open the date modal and submit chosen date to the right form
+  let _targetFormId = null;
+
+  function openPaidModal(emiId, emiNo) {
+    _targetFormId = 'emi-form-' + emiId;
+    const modal = document.getElementById('paidDateModal');
+    const input = document.getElementById('paidDateInput');
+    // default to today
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    input.value = yyyy + '-' + mm + '-' + dd;
+    modal.style.display = 'flex';
+    input.focus();
+  }
+
+  function closePaidModal() {
+    const modal = document.getElementById('paidDateModal');
+    modal.style.display = 'none';
+    _targetFormId = null;
+  }
+
+  function confirmPaidDate() {
+    if (!_targetFormId) return closePaidModal();
+    const input = document.getElementById('paidDateInput');
+    const dateVal = (input.value || '').trim();
+    if (!dateVal) {
+      alert('Please pick a date.');
+      input.focus();
+      return;
+    }
+    const form = document.getElementById(_targetFormId);
+    if (!form) {
+      alert('Form not found.');
+      closePaidModal();
+      return;
+    }
+    // set the paid_date hidden input and action value, then submit
+    const paidDateField = form.querySelector('input[name="paid_date"]');
+    if (paidDateField) paidDateField.value = dateVal;
+    // create/set a hidden input for action=mark_paid (some browsers won't submit button value when submitted programmatically)
+    let actionField = form.querySelector('input[name="action"][data-generated="1"]');
+    if (!actionField) {
+      actionField = document.createElement('input');
+      actionField.type = 'hidden';
+      actionField.name = 'action';
+      actionField.value = 'mark_paid';
+      actionField.setAttribute('data-generated', '1');
+      form.appendChild(actionField);
+    } else {
+      actionField.value = 'mark_paid';
+    }
+    form.submit();
+  }
+
+  // close modal on Escape
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('paidDateModal');
+      if (modal && modal.style.display === 'flex') closePaidModal();
+    }
+  });
+</script>
+
 """
 
 EDIT_BUYER_HTML = """
