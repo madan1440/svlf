@@ -45,6 +45,52 @@ EMI_FIELDS = ["id", "buyer_id", "emi_no", "due_date", "amount", "status", "paid_
 USER_FIELDS = ["id", "username", "name", "password_hash", "role"]
 AUDIT_FIELDS = ["id", "who", "action", "target", "ts"]
 
+FULL_FIELD_ALIASES = {
+    "vehicle_id": ["vehicleid", "vehicle id", "id", "v_id"],
+    "seller_name": ["seller", "sellername", "seller name"],
+    "seller_phone": ["sellerphone", "seller phone", "seller_mobile", "seller mobile"],
+    "seller_city": ["sellercity", "seller city", "city"],
+    "buy_value": ["buyvalue", "buy value", "purchase_value", "purchase amount"],
+    "buy_date": ["buydate", "buy date", "purchase_date", "purchase date"],
+    "buyer_id": ["buyerid", "buyer id", "customer_id", "customerid"],
+    "buyer_name": ["buyer", "buyername", "buyer name", "customer_name", "customer name"],
+    "buyer_phone": ["buyerphone", "buyer phone", "buyer_mobile", "customer_phone"],
+    "buyer_address": ["buyeraddress", "buyer address", "address", "customer_address"],
+    "sale_value": ["salevalue", "sale value", "selling_price", "selling value"],
+    "finance_amount": ["financeamount", "finance amount", "loan_amount", "loan amount"],
+    "emi_amount": ["emiamount", "emi amount", "installment_amount", "installment amount"],
+    "sale_date": ["saledate", "sale date", "sold_date", "sold date"],
+}
+
+EMI_FIELD_ALIASES = {
+    "buyer_id": ["buyerid", "buyer id", "customer_id"],
+    "emi_no": ["emino", "emi no", "installment_no", "installment no", "emi_number"],
+    "due_date": ["duedate", "due date", "emi_due_date", "payment_due_date"],
+    "paid_date": ["paiddate", "paid date", "payment_date"],
+    "amount": ["emi_amount", "emiamount", "installment_amount", "amount_due"],
+    "status": ["emi_status", "payment_status"],
+}
+
+USER_FIELD_ALIASES = {
+    "password_hash": ["passwordhash", "password hash", "pwd_hash"],
+}
+
+
+def normalize_header_key(value):
+    return "".join(ch.lower() for ch in str(value or "") if ch.isalnum())
+
+
+def field_alias_lookup(fieldnames, aliases=None):
+    aliases = aliases or {}
+    lookup = {}
+    for field in fieldnames:
+        candidates = [field] + aliases.get(field, [])
+        for candidate in candidates:
+            key = normalize_header_key(candidate)
+            if key:
+                lookup[key] = field
+    return lookup
+
 def ensure_csv(path, fieldnames):
     path_obj = Path(path)
     if not path_obj.exists() or path_obj.stat().st_size == 0:
@@ -53,13 +99,21 @@ def ensure_csv(path, fieldnames):
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
 
-def read_csv_rows(path, fieldnames):
+def read_csv_rows(path, fieldnames, aliases=None):
     ensure_csv(path, fieldnames)
+    alias_lookup = field_alias_lookup(fieldnames, aliases)
     rows = []
     with open(path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            rows.append({key: row.get(key, "") for key in fieldnames})
+            normalized = {key: "" for key in fieldnames}
+            for raw_key, value in row.items():
+                target_key = alias_lookup.get(normalize_header_key(raw_key))
+                if not target_key:
+                    continue
+                if normalized[target_key] == "" and value not in (None, ""):
+                    normalized[target_key] = value
+            rows.append(normalized)
     return rows
 
 def write_csv_rows(path, fieldnames, rows):
@@ -71,19 +125,19 @@ def write_csv_rows(path, fieldnames, rows):
             writer.writerow({key: row.get(key, "") for key in fieldnames})
 
 def load_full_rows():
-    return read_csv_rows(FULL_CSV, FULL_FIELDS)
+    return read_csv_rows(FULL_CSV, FULL_FIELDS, FULL_FIELD_ALIASES)
 
 def save_full_rows(rows):
     write_csv_rows(FULL_CSV, FULL_FIELDS, rows)
 
 def load_emi_rows():
-    return read_csv_rows(EMI_CSV, EMI_FIELDS)
+    return read_csv_rows(EMI_CSV, EMI_FIELDS, EMI_FIELD_ALIASES)
 
 def save_emi_rows(rows):
     write_csv_rows(EMI_CSV, EMI_FIELDS, rows)
 
 def load_users():
-    return read_csv_rows(USERS_CSV, USER_FIELDS)
+    return read_csv_rows(USERS_CSV, USER_FIELDS, USER_FIELD_ALIASES)
 
 def save_users(rows):
     write_csv_rows(USERS_CSV, USER_FIELDS, rows)
@@ -123,13 +177,20 @@ def normalize_finance_terms(finance_amount, emi_amount, tenure):
 def parse_iso_date(value):
     if not value:
         return None
-    try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
-    except (TypeError, ValueError):
+    value = str(value).strip()
+    if not value:
         return None
+    for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y", "%m/%d/%y", "%d-%m-%Y"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except (TypeError, ValueError):
+            continue
+    return None
 
 def derive_emi_status(emi_row, today=None):
     today = today or date.today()
+    if (emi_row.get("paid_date") or "").strip():
+        return "Paid"
     if (emi_row.get("status") or "").strip().lower() == "paid":
         return "Paid"
     due_date = parse_iso_date(emi_row.get("due_date"))
